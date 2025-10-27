@@ -1,0 +1,2246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sales Return Management Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: #2d3748;
+            padding: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            background: #2d3748;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: #cbd5e0;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #4a5568;
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #667eea;
+            color: white;
+            border-bottom-color: #48bb78;
+        }
+
+        .nav-item .icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        /* Main Container */
+        .main-container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .portal-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+        }
+
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 50%;
+            transform: translate(30px, -30px);
+        }
+
+        .portal-card h3 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .portal-card .icon {
+            font-size: 1.5rem;
+            color: #667eea;
+        }
+
+        .portal-card p {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat {
+            flex: 1;
+            text-align: center;
+            padding: 0.75rem;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #718096;
+            margin-top: 0.25rem;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+        }
+
+        .btn-secondary {
+            background: #718096;
+        }
+
+        .btn-secondary:hover {
+            background: #4a5568;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Module Interface */
+        .module-interface {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            min-height: 600px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .quick-action:hover {
+            transform: scale(1.05);
+        }
+
+        .quick-action .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Alert System */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            border: 1px solid #9ae6b4;
+            color: #22543d;
+        }
+
+        .alert-warning {
+            background: #feebc8;
+            border: 1px solid #fbd38d;
+            color: #744210;
+        }
+
+        .alert-danger {
+            background: #fed7d7;
+            border: 1px solid #feb2b2;
+            color: #742a2a;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav {
+                flex-direction: column;
+            }
+
+            .nav-item {
+                border-bottom: 1px solid #4a5568;
+                border-left: 3px solid transparent;
+            }
+
+            .nav-item.active {
+                border-left-color: #48bb78;
+                border-bottom-color: transparent;
+            }
+
+            .portal-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-online {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-processing {
+            background: #feebc8;
+            color: #744210;
+        }
+
+        .status-offline {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .dot-online { background: #38a169; }
+        .dot-processing { background: #d69e2e; }
+        .dot-offline { background: #e53e3e; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div style="font-size: 2rem;">🤖</div>
+                <div>
+                    <h1>AI Sales Return Portal</h1>
+                    <small>Intelligent Return Management System</small>
+                </div>
+            </div>
+            <div class="user-info">
+                <span>Welcome, Admin User</span>
+                <div class="user-avatar">AU</div>
+                <div class="status-indicator status-online">
+                    <div class="status-dot dot-online"></div>
+                    System Online
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-container">
+        <div class="nav">
+            <button class="nav-item active" onclick="showTab('dashboard')">
+                <span class="icon">📊</span>
+                Dashboard
+            </button>
+            <button class="nav-item" onclick="showTab('returns')">
+                <span class="icon">📦</span>
+                Returns Management
+            </button>
+            <button class="nav-item" onclick="showTab('ai-control')">
+                <span class="icon">🧠</span>
+                AI Control Center
+            </button>
+            <button class="nav-item" onclick="showTab('customer-portal')">
+                <span class="icon">👥</span>
+                Customer Portal
+            </button>
+            <button class="nav-item" onclick="showTab('approval-workflow')">
+                <span class="icon">✅</span>
+                Approval Workflow
+            </button>
+            <button class="nav-item" onclick="showTab('analytics')">
+                <span class="icon">📈</span>
+                Analytics
+            </button>
+            <button class="nav-item" onclick="showTab('settings')">
+                <span class="icon">⚙️</span>
+                Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="quick-action" onclick="showTab('returns')">
+                    <span class="icon">➕</span>
+                    <div>New Return</div>
+                </div>
+                <div class="quick-action" onclick="showTab('ai-control')">
+                    <span class="icon">🔍</span>
+                    <div>AI Analysis</div>
+                </div>
+                <div class="quick-action" onclick="showTab('approval-workflow')">
+                    <span class="icon">⚡</span>
+                    <div>Quick Review</div>
+                </div>
+                <div class="quick-action" onclick="showTab('analytics')">
+                    <span class="icon">📊</span>
+                    <div>View Reports</div>
+                </div>
+            </div>
+
+            <!-- Portal Overview Cards -->
+            <div class="portal-grid">
+                <div class="portal-card" onclick="showTab('returns')">
+                    <h3><span class="icon">📦</span> Returns Management</h3>
+                    <p>Comprehensive system for tracking and managing all sales returns with AI-powered verification and analysis.</p>
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-value">156</div>
+                            <div class="stat-label">Active Returns</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">23</div>
+                            <div class="stat-label">Pending Review</div>
+                        </div>
+                    </div>
+                    <button class="btn">Manage Returns</button>
+                </div>
+
+                <div class="portal-card" onclick="showTab('ai-control')">
+                    <h3><span class="icon">🧠</span> AI Control Center</h3>
+                    <p>Advanced AI-powered oversight with risk assessment, fraud detection, and automated decision-making capabilities.</p>
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-value">94.7%</div>
+                            <div class="stat-label">AI Accuracy</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">89%</div>
+                            <div class="stat-label">Auto Decisions</div>
+                        </div>
+                    </div>
+                    <button class="btn">Access AI Center</button>
+                </div>
+
+                <div class="portal-card" onclick="showTab('customer-portal')">
+                    <h3><span class="icon">👥</span> Customer Portal</h3>
+                    <p>Self-service portal for customers to submit returns, upload photos, and track return status in real-time.</p>
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-value">47</div>
+                            <div class="stat-label">Portal Users</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">94%</div>
+                            <div class="stat-label">Satisfaction</div>
+                        </div>
+                    </div>
+                    <button class="btn">Open Portal</button>
+                </div>
+
+                <div class="portal-card" onclick="showTab('approval-workflow')">
+                    <h3><span class="icon">✅</span> Approval Workflow</h3>
+                    <p>Streamlined approval system with AI-assisted decision making and intelligent routing for efficient processing.</p>
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Pending Approvals</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2.3s</div>
+                            <div class="stat-label">Avg Process Time</div>
+                        </div>
+                    </div>
+                    <button class="btn">Review Queue</button>
+                </div>
+
+                <div class="portal-card" onclick="showTab('analytics')">
+                    <h3><span class="icon">📈</span> Analytics & Insights</h3>
+                    <p>Comprehensive analytics dashboard with predictive insights, trend analysis, and performance metrics.</p>
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-value">$12,450</div>
+                            <div class="stat-label">Daily Savings</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">340%</div>
+                            <div class="stat-label">ROI This Month</div>
+                        </div>
+                    </div>
+                    <button class="btn">View Analytics</button>
+                </div>
+
+                <div class="portal-card" onclick="showTab('settings')">
+                    <h3><span class="icon">⚙️</span> System Settings</h3>
+                    <p>Configure AI models, set approval thresholds, manage user permissions, and customize system behavior.</p>
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-value">99.9%</div>
+                            <div class="stat-label">System Uptime</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">24/7</div>
+                            <div class="stat-label">Monitoring</div>
+                        </div>
+                    </div>
+                    <button class="btn">Configure</button>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">🔴 System Status Overview</h2>
+                </div>
+                <div class="portal-grid">
+                    <div class="stat" style="text-align: left; padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <strong>AI Risk Engine</strong>
+                            <div class="status-indicator status-online">
+                                <div class="status-dot dot-online"></div>
+                                Active
+                            </div>
+                        </div>
+                        <div class="stat-value" style="text-align: left;">247</div>
+                        <div class="stat-label" style="text-align: left;">Returns Analyzed Today</div>
+                    </div>
+                    
+                    <div class="stat" style="text-align: left; padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <strong>Fraud Detection</strong>
+                            <div class="status-indicator status-processing">
+                                <div class="status-dot dot-processing"></div>
+                                Monitoring
+                            </div>
+                        </div>
+                        <div class="stat-value" style="text-align: left;">12</div>
+                        <div class="stat-label" style="text-align: left;">Suspicious Activities</div>
+                    </div>
+                    
+                    <div class="stat" style="text-align: left; padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <strong>Item Verification</strong>
+                            <div class="status-indicator status-online">
+                                <div class="status-dot dot-online"></div>
+                                Processing
+                            </div>
+                        </div>
+                        <div class="stat-value" style="text-align: left;">97.2%</div>
+                        <div class="stat-label" style="text-align: left;">Match Accuracy</div>
+                    </div>
+                    
+                    <div class="stat" style="text-align: left; padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <strong>Automation Engine</strong>
+                            <div class="status-indicator status-online">
+                                <div class="status-dot dot-online"></div>
+                                Running
+                            </div>
+                        </div>
+                        <div class="stat-value" style="text-align: left;">134</div>
+                        <div class="stat-label" style="text-align: left;">Auto Decisions Made</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Returns Management Tab -->
+        <div id="returns" class="tab-content">
+            <div class="module-interface">
+                <div class="section-header">
+                    <h2 class="section-title">📦 Returns Management System</h2>
+                    <div class="section-actions">
+                        <button class="btn" onclick="showNewReturnModal()">
+                            <span style="font-size: 1rem;">➕</span>
+                            New Return
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportReturnsData()">
+                            <span style="font-size: 1rem;">📊</span>
+                            Export Data
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Alert System -->
+                <div class="alert alert-success">
+                    <span>✅</span>
+                    <div>
+                        <strong>System Update:</strong> AI has successfully processed 156 returns today with 94.7% accuracy. 
+                        <button class="btn btn-secondary" style="margin-left: 1rem; padding: 0.25rem 0.75rem; font-size: 0.8rem;" onclick="showProcessingDetails()">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Returns Table -->
+                <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="margin: 0; color: #2d3748;">📋 Recent Returns</h3>
+                        <div style="display: flex; gap: 1rem;">
+                            <select id="statusFilter" style="padding: 0.5rem; border-radius: 5px; border: 1px solid #e2e8f0;" onchange="filterReturns()">
+                                <option value="all">All Status</option>
+                                <option value="pending">Pending Review</option>
+                                <option value="approved">Approved</option>
+                                <option value="verified">Verified</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                            <input type="text" id="searchReturns" placeholder="Search returns..." style="padding: 0.5rem; border-radius: 5px; border: 1px solid #e2e8f0;" onkeyup="searchReturns()">
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table id="returnsTable" style="width: 100%; border-collapse: collapse;">
+                            <thead style="background: #f7fafc;">
+                                <tr>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e2e8f0;">Return ID</th>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e2e8f0;">Customer</th>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e2e8f0;">Item</th>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e2e8f0;">Salesperson</th>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e2e8f0;">AI Risk</th>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e2e8f0;">Status</th>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e2e8f0;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr onclick="showReturnDetails('RT-2025-001')" style="cursor: pointer;">
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">RT-2025-001</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">John Smith</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">iPhone 15 Pro</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">Sarah Johnson</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;"><span style="background: #c6f6d5; color: #22543d; padding: 0.25rem 0.5rem; border-radius: 15px; font-size: 0.8rem;">Low (12%)</span></td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;"><span style="background: #feebc8; color: #744210; padding: 0.25rem 0.5rem; border-radius: 15px; font-size: 0.8rem;">Verified</span></td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">
+                                        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="event.stopPropagation(); showReturnDetails('RT-2025-001')">View</button>
+                                    </td>
+                                </tr>
+                                <tr onclick="showReturnDetails('RT-2025-002')" style="cursor: pointer;">
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">RT-2025-002</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">Emily Davis</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">MacBook Air</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">Mike Wilson</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;"><span style="background: #fed7d7; color: #742a2a; padding: 0.25rem 0.5rem; border-radius: 15px; font-size: 0.8rem;">High (87%)</span></td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;"><span style="background: #fed7d7; color: #742a2a; padding: 0.25rem 0.5rem; border-radius: 15px; font-size: 0.8rem;">Review Required</span></td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">
+                                        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="event.stopPropagation(); reviewReturn('RT-2025-002')">Review</button>
+                                    </td>
+                                </tr>
+                                <tr onclick="showReturnDetails('RT-2025-003')" style="cursor: pointer;">
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">RT-2025-003</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">David Brown</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">AirPods Pro</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">Lisa Garcia</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;"><span style="background: #c6f6d5; color: #22543d; padding: 0.25rem 0.5rem; border-radius: 15px; font-size: 0.8rem;">Low (23%)</span></td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;"><span style="background: #c6f6d5; color: #22543d; padding: 0.25rem 0.5rem; border-radius: 15px; font-size: 0.8rem;">Auto-Approved</span></td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">
+                                        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="event.stopPropagation(); showReturnDetails('RT-2025-003')">View</button>
+                                    </td>
+                                </tr>
+                                <tr onclick="showReturnDetails('RT-2025-004')" style="cursor: pointer;">
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">RT-2025-004</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">Maria Rodriguez</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">iPad Pro</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">Tom Anderson</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;"><span style="background: #feebc8; color: #744210; padding: 0.25rem 0.5rem; border-radius: 15px; font-size: 0.8rem;">Medium (45%)</span></td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;"><span style="background: #feebc8; color: #744210; padding: 0.25rem 0.5rem; border-radius: 15px; font-size: 0.8rem;">Pending</span></td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">
+                                        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="event.stopPropagation(); processReturn('RT-2025-004')">Process</button>
+                                    </td>
+                                </tr>
+                                <tr onclick="showReturnDetails('RT-2025-005')" style="cursor: pointer;">
+                                    <td style="padding: 1rem;">RT-2025-005</td>
+                                    <td style="padding: 1rem;">Robert Taylor</td>
+                                    <td style="padding: 1rem;">Apple Watch</td>
+                                    <td style="padding: 1rem;">Sarah Johnson</td>
+                                    <td style="padding: 1rem;"><span style="background: #c6f6d5; color: #22543d; padding: 0.25rem 0.5rem; border-radius: 15px; font-size: 0.8rem;">Low (8%)</span></td>
+                                    <td style="padding: 1rem;"><span style="background: #c6f6d5; color: #22543d; padding: 0.25rem 0.5rem; border-radius: 15px; font-size: 0.8rem;">Completed</span></td>
+                                    <td style="padding: 1rem;">
+                                        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="event.stopPropagation(); showReturnDetails('RT-2025-005')">View</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="portal-grid">
+                    <div class="portal-card" onclick="showAllReturns()">
+                        <h3><span class="icon">🎯</span> Track Returns</h3>
+                        <p>Monitor all returns with real-time status updates, AI verification progress, and automated notifications.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="activeReturns">156</div>
+                                <div class="stat-label">Active</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="pendingReturns">23</div>
+                                <div class="stat-label">Pending</div>
+                            </div>
+                        </div>
+                        <button class="btn">View All Returns</button>
+                    </div>
+
+                    <div class="portal-card" onclick="showSalespersonPerformance()">
+                        <h3><span class="icon">👤</span> Salesperson Tracking</h3>
+                        <p>Track returns by salesperson with performance analytics, trend analysis, and coaching insights.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value">18</div>
+                                <div class="stat-label">Staff Members</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="returnRate">2.3%</div>
+                                <div class="stat-label">Return Rate</div>
+                            </div>
+                        </div>
+                        <button class="btn">Performance Dashboard</button>
+                    </div>
+
+                    <div class="portal-card" onclick="showVerificationResults()">
+                        <h3><span class="icon">🔍</span> Item Verification</h3>
+                        <p>AI-powered verification system that ensures returned items match original sales with 97.2% accuracy.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="verifiedToday">189</div>
+                                <div class="stat-label">Verified Today</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="discrepancies">8</div>
+                                <div class="stat-label">Discrepancies</div>
+                            </div>
+                        </div>
+                        <button class="btn">Review Verification</button>
+                    </div>
+
+                    <div class="portal-card" onclick="showTimelineAnalysis()">
+                        <h3><span class="icon">⏰</span> Timeline Analysis</h3>
+                        <p>Track sale-to-return timelines with predictive analytics and automated deadline management.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="avgDays">15.2</div>
+                                <div class="stat-label">Avg Days</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">92%</div>
+                                <div class="stat-label">On Time</div>
+                            </div>
+                        </div>
+                        <button class="btn">Timeline Reports</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Control Center Tab -->
+        <div id="ai-control" class="tab-content">
+            <div class="module-interface">
+                <div class="section-header">
+                    <h2 class="section-title">🧠 AI Control Center</h2>
+                    <div class="section-actions">
+                        <button class="btn" onclick="showAIModels()">
+                            <span style="font-size: 1rem;">🤖</span>
+                            AI Models
+                        </button>
+                        <button class="btn btn-secondary" onclick="configureAI()">
+                            <span style="font-size: 1rem;">⚙️</span>
+                            Configure
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Real-time AI Metrics -->
+                <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem; color: #2d3748;">🔄 Live AI Processing</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div style="padding: 1rem; background: #f7fafc; border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <span>Risk Assessment Engine</span>
+                                <div class="status-indicator status-online">
+                                    <div class="status-dot dot-online"></div>
+                                    Active
+                                </div>
+                            </div>
+                            <div style="font-size: 2rem; font-weight: bold; color: #667eea;" id="riskAnalyzed">247</div>
+                            <div style="font-size: 0.9rem; color: #718096;">Returns Analyzed Today</div>
+                            <div style="margin-top: 0.5rem;">
+                                <div style="background: #e2e8f0; height: 6px; border-radius: 3px;">
+                                    <div style="background: #667eea; height: 6px; border-radius: 3px; width: 94.7%;"></div>
+                                </div>
+                                <div style="font-size: 0.8rem; color: #718096; margin-top: 0.25rem;">94.7% Accuracy</div>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 1rem; background: #f7fafc; border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <span>Item Verification AI</span>
+                                <div class="status-indicator status-online">
+                                    <div class="status-dot dot-online"></div>
+                                    Processing
+                                </div>
+                            </div>
+                            <div style="font-size: 2rem; font-weight: bold; color: #667eea;" id="verifiedCount">189</div>
+                            <div style="font-size: 0.9rem; color: #718096;">Items Verified Today</div>
+                            <div style="margin-top: 0.5rem;">
+                                <div style="background: #e2e8f0; height: 6px; border-radius: 3px;">
+                                    <div style="background: #48bb78; height: 6px; border-radius: 3px; width: 97.2%;"></div>
+                                </div>
+                                <div style="font-size: 0.8rem; color: #718096; margin-top: 0.25rem;">97.2% Accuracy</div>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 1rem; background: #f7fafc; border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <span>Decision Engine</span>
+                                <div class="status-indicator status-online">
+                                    <div class="status-dot dot-online"></div>
+                                    Running
+                                </div>
+                            </div>
+                            <div style="font-size: 2rem; font-weight: bold; color: #667eea;" id="decisionsMade">134</div>
+                            <div style="font-size: 0.9rem; color: #718096;">Auto-Decisions Made</div>
+                            <div style="margin-top: 0.5rem;">
+                                <div style="background: #e2e8f0; height: 6px; border-radius: 3px;">
+                                    <div style="background: #9ae6b4; height: 6px; border-radius: 3px; width: 89.3%;"></div>
+                                </div>
+                                <div style="font-size: 0.8rem; color: #718096; margin-top: 0.25rem;">89.3% Confidence</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Control Panels -->
+                <div class="portal-grid">
+                    <div class="portal-card" onclick="showRiskAssessment()">
+                        <h3><span class="icon">⚠️</span> Risk Assessment</h3>
+                        <p>Real-time AI risk evaluation with 94.7% accuracy, providing comprehensive risk scoring for all return requests.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="riskToday">247</div>
+                                <div class="stat-label">Analyzed Today</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="highRiskCount">12</div>
+                                <div class="stat-label">High Risk</div>
+                            </div>
+                        </div>
+                        <button class="btn">View Risk Reports</button>
+                    </div>
+
+                    <div class="portal-card" onclick="showFraudDetection()">
+                        <h3><span class="icon">🛡️</span> Fraud Detection</h3>
+                        <p>Multi-layer fraud detection system with behavioral analysis, device fingerprinting, and ML anomaly detection.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="fraudDetectionRate">94%</div>
+                                <div class="stat-label">Detection Rate</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">$45K</div>
+                                <div class="stat-label">Annual Savings</div>
+                            </div>
+                        </div>
+                        <button class="btn">Fraud Dashboard</button>
+                    </div>
+
+                    <div class="portal-card" onclick="showPredictiveAnalytics()">
+                        <h3><span class="icon">🔮</span> Predictive Analytics</h3>
+                        <p>AI-powered forecasting with 87% accuracy for return volumes, inventory impact, and customer retention.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="forecastIncrease">+23%</div>
+                                <div class="stat-label">7-Day Forecast</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="forecastConfidence">87%</div>
+                                <div class="stat-label">Confidence</div>
+                            </div>
+                        </div>
+                        <button class="btn">View Forecasts</button>
+                    </div>
+
+                    <div class="portal-card" onclick="showSmartAutomation()">
+                        <h3><span class="icon">⚡</span> Smart Automation</h3>
+                        <p>Intelligent automation with 89% auto-decision rate, smart routing, and automated communications.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="autoDecisionRate">89%</div>
+                                <div class="stat-label">Auto Decisions</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">73%</div>
+                                <div class="stat-label">Time Saved</div>
+                            </div>
+                        </div>
+                        <button class="btn">Manage Automation</button>
+                    </div>
+                </div>
+
+                <!-- AI Alerts and Notifications -->
+                <div class="alert alert-warning">
+                    <span>⚠️</span>
+                    <div>
+                        <strong>AI Alert:</strong> Pattern detected in Store #7 - 23% increase in processing errors. 
+                        <button class="btn btn-secondary" style="margin-left: 1rem; padding: 0.25rem 0.75rem; font-size: 0.8rem;" onclick="investigatePattern()">Investigate</button>
+                    </div>
+                </div>
+
+                <!-- Recent AI Activities -->
+                <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 1rem; color: #2d3748;">📡 Recent AI Activities</h3>
+                    <div id="aiActivities" style="space-y: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #f7fafc; border-radius: 6px; margin-bottom: 0.5rem;">
+                            <div style="width: 10px; height: 10px; background: #48bb78; border-radius: 50%;"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Risk Assessment Completed</div>
+                                <div style="font-size: 0.9rem; color: #718096;">Return RT-2025-001 analyzed - Low risk (12%)</div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: #718096;">2 min ago</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #f7fafc; border-radius: 6px; margin-bottom: 0.5rem;">
+                            <div style="width: 10px; height: 10px; background: #f59e0b; border-radius: 50%;"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Fraud Pattern Detected</div>
+                                <div style="font-size: 0.9rem; color: #718096;">Multiple high-value returns from same customer flagged</div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: #718096;">5 min ago</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #f7fafc; border-radius: 6px; margin-bottom: 0.5rem;">
+                            <div style="width: 10px; height: 10px; background: #48bb78; border-radius: 50%;"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Item Verification Success</div>
+                                <div style="font-size: 0.9rem; color: #718096;">iPhone 15 Pro images matched - 98.7% confidence</div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: #718096;">8 min ago</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #f7fafc; border-radius: 6px;">
+                            <div style="width: 10px; height: 10px; background: #48bb78; border-radius: 50%;"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Auto Decision Made</div>
+                                <div style="font-size: 0.9rem; color: #718096;">Return RT-2025-003 auto-approved based on AI analysis</div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: #718096;">12 min ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Portal Tab -->
+        <div id="customer-portal" class="tab-content">
+            <div class="module-interface">
+                <div class="section-header">
+                    <h2 class="section-title">👥 Customer Return Portal</h2>
+                    <div class="section-actions">
+                        <button class="btn" onclick="launchCustomerPortal()">
+                            <span style="font-size: 1rem;">🚀</span>
+                            Launch Portal
+                        </button>
+                        <button class="btn btn-secondary" onclick="showUsageStats()">
+                            <span style="font-size: 1rem;">📊</span>
+                            Usage Stats
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Customer Portal Preview -->
+                <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem; color: #2d3748;">🌐 Portal Preview</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+                        <!-- Customer Interface Mockup -->
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: #4a5568;">Customer Interface</h4>
+                            <div style="border: 2px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                                <div style="background: #667eea; color: white; padding: 1rem; text-align: center;">
+                                    <strong>Customer Return Portal</strong>
+                                </div>
+                                <div style="padding: 1.5rem; background: #f7fafc;">
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Order Number:</label>
+                                        <input type="text" value="ORD-2025-001234" style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px;" readonly>
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Return Reason:</label>
+                                        <select style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px;">
+                                            <option>Wrong item received</option>
+                                            <option>Item damaged</option>
+                                            <option>Not as described</option>
+                                            <option>Changed mind</option>
+                                        </select>
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Upload Photos:</label>
+                                        <div style="border: 2px dashed #cbd5e0; padding: 2rem; text-align: center; border-radius: 4px; background: white;">
+                                            📸 Click to upload product photos
+                                        </div>
+                                    </div>
+                                    <button class="btn" style="width: 100%;" onclick="simulateReturnSubmission()">Submit Return Request</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Statistics -->
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: #4a5568;">Live Portal Activity</h4>
+                            <div style="space-y: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f7fafc; border-radius: 6px; margin-bottom: 0.5rem;">
+                                    <span>Active Users</span>
+                                    <span style="font-weight: bold; color: #667eea;" id="activePortalUsers">47</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f7fafc; border-radius: 6px; margin-bottom: 0.5rem;">
+                                    <span>Returns Submitted Today</span>
+                                    <span style="font-weight: bold; color: #667eea;" id="returnsToday">23</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f7fafc; border-radius: 6px; margin-bottom: 0.5rem;">
+                                    <span>Photo Uploads</span>
+                                    <span style="font-weight: bold; color: #667eea;" id="photoUploads">67</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f7fafc; border-radius: 6px;">
+                                    <span>Auto-Approvals</span>
+                                    <span style="font-weight: bold; color: #48bb78;" id="autoApprovals">68%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="portal-grid">
+                    <div class="portal-card" onclick="showSelfServiceInterface()">
+                        <h3><span class="icon">📱</span> Self-Service Returns</h3>
+                        <p>Customers can submit return requests, upload photos, and track status without needing staff assistance.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="portalUsers">47</div>
+                                <div class="stat-label">Active Users</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="autoApprovalRate">68%</div>
+                                <div class="stat-label">Auto-Approved</div>
+                            </div>
+                        </div>
+                        <button class="btn">Open Portal</button>
+                    </div>
+
+                    <div class="portal-card" onclick="showPhotoUploadSystem()">
+                        <h3><span class="icon">📸</span> Photo Upload System</h3>
+                        <p>AI-powered image analysis for item verification, condition assessment, and automatic matching.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="imagesToday">189</div>
+                                <div class="stat-label">Images Today</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="imageAccuracy">97.2%</div>
+                                <div class="stat-label">Accuracy</div>
+                            </div>
+                        </div>
+                        <button class="btn">Review Photos</button>
+                    </div>
+
+                    <div class="portal-card" onclick="configureNotifications()">
+                        <h3><span class="icon">🔔</span> Status Notifications</h3>
+                        <p>Automated status updates via email, SMS, and portal notifications keep customers informed.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="satisfactionRate">94%</div>
+                                <div class="stat-label">Satisfaction</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">< 2min</div>
+                                <div class="stat-label">Response Time</div>
+                            </div>
+                        </div>
+                        <button class="btn">Configure Notifications</button>
+                    </div>
+
+                    <div class="portal-card" onclick="showSupportDashboard()">
+                        <h3><span class="icon">💬</span> Customer Support</h3>
+                        <p>Integrated chat support with AI assistants and seamless escalation to human agents when needed.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="aiResponses">89</div>
+                                <div class="stat-label">AI Responses</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="humanEscalations">12</div>
+                                <div class="stat-label">Human Escalations</div>
+                            </div>
+                        </div>
+                        <button class="btn">Support Dashboard</button>
+                    </div>
+                </div>
+
+                <!-- Recent Customer Activity -->
+                <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 1rem; color: #2d3748;">📱 Recent Customer Activity</h3>
+                    <div id="customerActivity">
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #f7fafc; border-radius: 6px; margin-bottom: 0.5rem;">
+                            <div style="width: 10px; height: 10px; background: #48bb78; border-radius: 50%;"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Return submitted by John Smith</div>
+                                <div style="font-size: 0.9rem; color: #718096;">iPhone 15 Pro - "Wrong color received"</div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: #718096;">3 min ago</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #f7fafc; border-radius: 6px; margin-bottom: 0.5rem;">
+                            <div style="width: 10px; height: 10px; background: #48bb78; border-radius: 50%;"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Photos uploaded by Emily Davis</div>
+                                <div style="font-size: 0.9rem; color: #718096;">MacBook Air - 3 images uploaded</div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: #718096;">7 min ago</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #f7fafc; border-radius: 6px; margin-bottom: 0.5rem;">
+                            <div style="width: 10px; height: 10px; background: #667eea; border-radius: 50%;"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Auto-approval granted</div>
+                                <div style="font-size: 0.9rem; color: #718096;">David Brown's return approved automatically</div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: #718096;">12 min ago</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #f7fafc; border-radius: 6px;">
+                            <div style="width: 10px; height: 10px; background: #f59e0b; border-radius: 50%;"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Support chat initiated</div>
+                                <div style="font-size: 0.9rem; color: #718096;">Maria Rodriguez needs help with return process</div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: #718096;">15 min ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Approval Workflow Tab -->
+        <div id="approval-workflow" class="tab-content">
+            <div class="module-interface">
+                <div class="section-header">
+                    <h2 class="section-title">✅ Approval Workflow System</h2>
+                    <div class="section-actions">
+                        <button class="btn" onclick="showApprovalQueue()">
+                            <span style="font-size: 1rem;">📋</span>
+                            Approval Queue
+                        </button>
+                        <button class="btn btn-secondary" onclick="manageApprovers()">
+                            <span style="font-size: 1rem;">👥</span>
+                            Manage Approvers
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pending Approvals Queue -->
+                <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem; color: #2d3748;">⏳ Pending Approvals</h3>
+                    <div id="pendingApprovals">
+                        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; background: #fef5e7;">
+                            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 0.5rem;">
+                                <div style="font-weight: 600; color: #d97706;">🔶 High Priority</div>
+                                <div style="margin-left: auto; font-size: 0.8rem; color: #6b7280;">3 min ago</div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 1rem; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 500;">RT-2025-002</div>
+                                    <div style="font-size: 0.9rem; color: #6b7280;">Emily Davis - MacBook Air</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: #6b7280;">AI Risk Score</div>
+                                    <div style="font-weight: 600; color: #dc2626;">87% (High)</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: #6b7280;">AI Recommendation</div>
+                                    <div style="font-weight: 600; color: #dc2626;">❌ Decline</div>
+                                </div>
+                                <div>
+                                    <button class="btn" style="background: #dc2626; margin-right: 0.5rem;" onclick="approveReturn('RT-2025-002', 'decline')">Decline</button>
+                                    <button class="btn btn-secondary" onclick="reviewReturn('RT-2025-002')">Review</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; background: #f0f9ff;">
+                            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 0.5rem;">
+                                <div style="font-weight: 600; color: #0284c7;">🔵 Medium Priority</div>
+                                <div style="margin-left: auto; font-size: 0.8rem; color: #6b7280;">8 min ago</div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 1rem; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 500;">RT-2025-004</div>
+                                    <div style="font-size: 0.9rem; color: #6b7280;">Maria Rodriguez - iPad Pro</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: #6b7280;">AI Risk Score</div>
+                                    <div style="font-weight: 600; color: #d97706;">45% (Medium)</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: #6b7280;">AI Recommendation</div>
+                                    <div style="font-weight: 600; color: #d97706;">⚠️ Review Required</div>
+                                </div>
+                                <div>
+                                    <button class="btn" style="background: #f59e0b; margin-right: 0.5rem;" onclick="approveReturn('RT-2025-004', 'approve')">Approve</button>
+                                    <button class="btn btn-secondary" onclick="reviewReturn('RT-2025-004')">Review</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; background: #f0fdf4;">
+                            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 0.5rem;">
+                                <div style="font-weight: 600; color: #16a34a;">🟢 Low Priority</div>
+                                <div style="margin-left: auto; font-size: 0.8rem; color: #6b7280;">15 min ago</div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 1rem; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 500;">RT-2025-006</div>
+                                    <div style="font-size: 0.9rem; color: #6b7280;">Robert Johnson - AirPods Pro</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: #6b7280;">AI Risk Score</div>
+                                    <div style="font-weight: 600; color: #16a34a;">15% (Low)</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: #6b7280;">AI Recommendation</div>
+                                    <div style="font-weight: 600; color: #16a34a;">✅ Auto-Approve</div>
+                                </div>
+                                <div>
+                                    <button class="btn" style="background: #16a34a; margin-right: 0.5rem;" onclick="approveReturn('RT-2025-006', 'approve')">Approve</button>
+                                    <button class="btn btn-secondary" onclick="reviewReturn('RT-2025-006')">Review</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="portal-grid">
+                    <div class="portal-card" onclick="showSmartQueue()">
+                        <h3><span class="icon">📊</span> Smart Approval Queue</h3>
+                        <p>AI-enhanced approval system with intelligent prioritization and automated routing to appropriate reviewers.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="pendingCount">12</div>
+                                <div class="stat-label">Pending</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="avgProcessTime">2.3s</div>
+                                <div class="stat-label">Avg Process</div>
+                            </div>
+                        </div>
+                        <button class="btn">Review Queue</button>
+                    </div>
+
+                    <div class="portal-card" onclick="showAIRecommendations()">
+                        <h3><span class="icon">🎯</span> AI Recommendations</h3>
+                        <p>Machine learning provides approval recommendations with confidence scores and reasoning for each decision.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="aiDecisions">134</div>
+                                <div class="stat-label">AI Decisions</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="aiConfidence">89.3%</div>
+                                <div class="stat-label">Confidence</div>
+                            </div>
+                        </div>
+                        <button class="btn">View Recommendations</button>
+                    </div>
+
+                    <div class="portal-card" onclick="configureWorkflow()">
+                        <h3><span class="icon">👨‍💼</span> Multi-Level Approvals</h3>
+                        <p>Configurable approval chains with automatic escalation and delegation for complex return scenarios.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="approvalLevels">3</div>
+                                <div class="stat-label">Approval Levels</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="activeWorkflows">21</div>
+                                <div class="stat-label">Currently Active</div>
+                            </div>
+                        </div>
+                        <button class="btn">Configure Workflow</button>
+                    </div>
+
+                    <div class="portal-card" onclick="showApprovalAnalytics()">
+                        <h3><span class="icon">📈</span> Performance Analytics</h3>
+                        <p>Track approval times, approval rates, and team performance with detailed analytics and reporting.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="approvalRate">87%</div>
+                                <div class="stat-label">Approval Rate</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="processingTime">4.2hrs</div>
+                                <div class="stat-label">Avg Processing</div>
+                            </div>
+                        </div>
+                        <button class="btn">View Analytics</button>
+                    </div>
+                </div>
+
+                <!-- Workflow Configuration Panel -->
+                <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 1rem; color: #2d3748;">⚙️ Workflow Configuration</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: #4a5568;">Approval Rules</h4>
+                            <div style="space-y: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f7fafc; border-radius: 4px; margin-bottom: 0.5rem;">
+                                    <span>Auto-approve if risk < 20%</span>
+                                    <div class="status-indicator status-online">
+                                        <div class="status-dot dot-online"></div>
+                                        Enabled
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f7fafc; border-radius: 4px; margin-bottom: 0.5rem;">
+                                    <span>Manual review if risk > 70%</span>
+                                    <div class="status-indicator status-online">
+                                        <div class="status-dot dot-online"></div>
+                                        Enabled
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f7fafc; border-radius: 4px; margin-bottom: 0.5rem;">
+                                    <span>Manager escalation for >$1000</span>
+                                    <div class="status-indicator status-online">
+                                        <div class="status-dot dot-online"></div>
+                                        Enabled
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: #4a5568;">Current Approvers</h4>
+                            <div style="space-y: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f7fafc; border-radius: 4px; margin-bottom: 0.5rem;">
+                                    <span>Sarah Johnson</span>
+                                    <span style="font-size: 0.8rem; color: #6b7280;">8 pending</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f7fafc; border-radius: 4px; margin-bottom: 0.5rem;">
+                                    <span>Mike Wilson</span>
+                                    <span style="font-size: 0.8rem; color: #6b7280;">3 pending</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f7fafc; border-radius: 4px;">
+                                    <span>Lisa Garcia</span>
+                                    <span style="font-size: 0.8rem; color: #6b7280;">1 pending</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="module-interface">
+                <div class="section-header">
+                    <h2 class="section-title">📈 Analytics & Business Intelligence</h2>
+                    <div class="section-actions">
+                        <button class="btn" onclick="generateReport()">
+                            <span style="font-size: 1rem;">📊</span>
+                            Generate Report
+                        </button>
+                        <button class="btn btn-secondary" onclick="scheduleReports()">
+                            <span style="font-size: 1rem;">📧</span>
+                            Schedule Reports
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Key Performance Metrics -->
+                <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem; color: #2d3748;">📊 Key Performance Indicators</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 8px;">
+                            <div style="font-size: 2.5rem; font-weight: bold;" id="totalSavings">$12,450</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Daily Savings</div>
+                            <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">↑ 23% vs yesterday</div>
+                        </div>
+                        <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #48bb78, #38a169); color: white; border-radius: 8px;">
+                            <div style="font-size: 2.5rem; font-weight: bold;" id="roiPercentage">340%</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Monthly ROI</div>
+                            <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">↑ 15% vs last month</div>
+                        </div>
+                        <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border-radius: 8px;">
+                            <div style="font-size: 2.5rem; font-weight: bold;" id="accuracyRate">94.7%</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">AI Accuracy</div>
+                            <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">↑ 2.1% vs last week</div>
+                        </div>
+                        <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border-radius: 8px;">
+                            <div style="font-size: 2.5rem; font-weight: bold;" id="processingTime">2.3s</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Avg Response</div>
+                            <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">↓ 0.4s vs last month</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Impact Chart Simulation -->
+                <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem; color: #2d3748;">💰 Financial Impact Analysis</h3>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: #4a5568;">Monthly Savings Trend</h4>
+                            <div style="height: 200px; background: #f7fafc; border-radius: 8px; position: relative; overflow: hidden;">
+                                <!-- Simulated chart bars -->
+                                <div style="display: flex; align-items: end; height: 100%; padding: 1rem; gap: 0.5rem;">
+                                    <div style="background: #667eea; width: 20px; height: 60%; border-radius: 2px;"></div>
+                                    <div style="background: #667eea; width: 20px; height: 75%; border-radius: 2px;"></div>
+                                    <div style="background: #667eea; width: 20px; height: 80%; border-radius: 2px;"></div>
+                                    <div style="background: #667eea; width: 20px; height: 85%; border-radius: 2px;"></div>
+                                    <div style="background: #48bb78; width: 20px; height: 90%; border-radius: 2px;"></div>
+                                    <div style="background: #48bb78; width: 20px; height: 95%; border-radius: 2px;"></div>
+                                    <div style="background: #48bb78; width: 20px; height: 100%; border-radius: 2px;"></div>
+                                </div>
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.5rem; background: rgba(255,255,255,0.9); font-size: 0.8rem; color: #6b7280;">
+                                    <span style="margin-right: 1rem;">Apr</span>
+                                    <span style="margin-right: 1rem;">May</span>
+                                    <span style="margin-right: 1rem;">Jun</span>
+                                    <span style="margin-right: 1rem;">Jul</span>
+                                    <span style="margin-right: 1rem;">Aug</span>
+                                    <span style="margin-right: 1rem;">Sep</span>
+                                    <span>Oct</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: #4a5568;">Cost Breakdown</h4>
+                            <div style="space-y: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f7fafc; border-radius: 4px; margin-bottom: 0.5rem;">
+                                    <span>Fraud Prevention</span>
+                                    <span style="font-weight: bold; color: #48bb78;">$45,000</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f7fafc; border-radius: 4px; margin-bottom: 0.5rem;">
+                                    <span>Process Automation</span>
+                                    <span style="font-weight: bold; color: #48bb78;">$32,500</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f7fafc; border-radius: 4px; margin-bottom: 0.5rem;">
+                                    <span>Time Savings</span>
+                                    <span style="font-weight: bold; color: #48bb78;">$28,200</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f7fafc; border-radius: 4px;">
+                                    <span>Error Reduction</span>
+                                    <span style="font-weight: bold; color: #48bb78;">$15,800</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="portal-grid">
+                    <div class="portal-card" onclick="showFinancialReport()">
+                        <h3><span class="icon">💰</span> ROI & Cost Analysis</h3>
+                        <p>Comprehensive financial analysis showing ROI, cost savings, and efficiency gains from AI implementation.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="dailySavings">$12,450</div>
+                                <div class="stat-label">Daily Savings</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="monthlyRoi">340%</div>
+                                <div class="stat-label">Monthly ROI</div>
+                            </div>
+                        </div>
+                        <button class="btn">View Financial Report</button>
+                    </div>
+
+                    <div class="portal-card" onclick="showPerformanceDashboard()">
+                        <h3><span class="icon">📊</span> Performance Metrics</h3>
+                        <p>Key performance indicators including processing times, accuracy rates, customer satisfaction, and system health.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="accuracy">94.7%</div>
+                                <div class="stat-label">Accuracy Rate</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="responseTime">2.3s</div>
+                                <div class="stat-label">Avg Response</div>
+                            </div>
+                        </div>
+                        <button class="btn">Performance Dashboard</button>
+                    </div>
+
+                    <div class="portal-card" onclick="showTrendAnalysis()">
+                        <h3><span class="icon">🔍</span> Trend Analysis</h3>
+                        <p>Advanced analytics identifying trends, patterns, and insights across return reasons, products, and staff performance.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="patternsFound">23</div>
+                                <div class="stat-label">Patterns Found</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="trendAccuracy">91.8%</div>
+                                <div class="stat-label">Trend Accuracy</div>
+                            </div>
+                        </div>
+                        <button class="btn">Trend Analysis</button>
+                    </div>
+
+                    <div class="portal-card" onclick="showPredictiveModels()">
+                        <h3><span class="icon">🎯</span> Predictive Insights</h3>
+                        <p>AI-powered forecasting for return volumes, inventory needs, and business planning with confidence intervals.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="volumeForecast">+23%</div>
+                                <div class="stat-label">Volume Forecast</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="forecastAcc">87%</div>
+                                <div class="stat-label">Forecast Accuracy</div>
+                            </div>
+                        </div>
+                        <button class="btn">Predictive Models</button>
+                    </div>
+                </div>
+
+                <!-- Recent Analytics Updates -->
+                <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 1rem; color: #2d3748;">📈 Recent Analytics Updates</h3>
+                    <div id="analyticsUpdates">
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #f7fafc; border-radius: 6px; margin-bottom: 0.5rem;">
+                            <div style="width: 10px; height: 10px; background: #48bb78; border-radius: 50%;"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Monthly ROI Report Generated</div>
+                                <div style="font-size: 0.9rem; color: #718096;">340% ROI achieved, $121,500 total savings this month</div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: #718096;">1 hour ago</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #f7fafc; border-radius: 6px; margin-bottom: 0.5rem;">
+                            <div style="width: 10px; height: 10px; background: #667eea; border-radius: 50%;"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">AI Performance Update</div>
+                                <div style="font-size: 0.9rem; color: #718096;">Accuracy improved to 94.7%, decision time reduced to 2.3s</div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: #718096;">3 hours ago</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #f7fafc; border-radius: 6px;">
+                            <div style="width: 10px; height: 10px; background: #f59e0b; border-radius: 50%;"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Trend Alert</div>
+                                <div style="font-size: 0.9rem; color: #718096;">New pattern detected: 15% increase in electronics returns</div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: #718096;">5 hours ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="module-interface">
+                <div class="section-header">
+                    <h2 class="section-title">⚙️ System Configuration</h2>
+                    <div class="section-actions">
+                        <button class="btn" onclick="saveSettings()">
+                            <span style="font-size: 1rem;">💾</span>
+                            Save Settings
+                        </button>
+                        <button class="btn btn-secondary">
+                            <span style="font-size: 1rem;">🔄</span>
+                            Reset to Defaults
+                        </button>
+                    </div>
+                </div>
+
+                <div class="portal-grid">
+                    <div class="portal-card">
+                        <h3><span class="icon">🤖</span> AI Model Configuration</h3>
+                        <p>Configure AI model parameters, update thresholds, and manage machine learning models for optimal performance.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value">94.7%</div>
+                                <div class="stat-label">Current Accuracy</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">v2.3.1</div>
+                                <div class="stat-label">Model Version</div>
+                            </div>
+                        </div>
+                        <button class="btn">Configure AI Models</button>
+                    </div>
+
+                    <div class="portal-card">
+                        <h3><span class="icon">🔒</span> Security & Compliance</h3>
+                        <p>Manage authentication, authorization, encryption, and compliance settings for data security and GDPR.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value">99.9%</div>
+                                <div class="stat-label">Security Score</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">✓</div>
+                                <div class="stat-label">GDPR Compliant</div>
+                            </div>
+                        </div>
+                        <button class="btn">Security Settings</button>
+                    </div>
+
+                    <div class="portal-card">
+                        <h3><span class="icon">👥</span> User Management</h3>
+                        <p>Manage user accounts, roles, permissions, and access levels for staff and customer portal users.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value">47</div>
+                                <div class="stat-label">Active Users</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">5</div>
+                                <div class="stat-label">Role Levels</div>
+                            </div>
+                        </div>
+                        <button class="btn">Manage Users</button>
+                    </div>
+
+                    <div class="portal-card">
+                        <h3><span class="icon">🔗</span> Integration Settings</h3>
+                        <p>Configure API integrations, webhooks, and connections to existing business systems and databases.</p>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-value">8</div>
+                                <div class="stat-label">Active Integrations</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">99.8%</div>
+                                <div class="stat-label">Sync Rate</div>
+                            </div>
+                        </div>
+                        <button class="btn">Integration Panel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation function
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.nav-item');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            const targetTab = document.getElementById(tabName);
+            if (targetTab) {
+                targetTab.classList.add('active');
+                
+                // Find and activate the corresponding nav button
+                const navButton = document.querySelector(`[onclick="showTab('${tabName}')"]`);
+                if (navButton) {
+                    navButton.classList.add('active');
+                }
+                
+                // Smooth scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Returns Management Functions
+        function showNewReturnModal() {
+            alert('🆕 New Return Modal\n\nIn a real system, this would open a comprehensive form for creating a new return request with:\n\n• Customer information lookup\n• Item selection and photo upload\n• Return reason selection with AI classification\n• Real-time risk assessment\n• Automated workflow routing\n• Email/SMS notifications');
+        }
+
+        function exportReturnsData() {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading"></span> Exporting...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = '✅ Exported';
+                btn.style.background = '#48bb78';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '#718096';
+                    btn.disabled = false;
+                }, 2000);
+            }, 2000);
+        }
+
+        function showProcessingDetails() {
+            alert('📊 Processing Details\n\nAI Performance Today:\n\n• 156 returns processed\n• 94.7% accuracy rate\n• 23 pending manual review\n• 12 high-risk flagged\n• $12,450 in potential fraud prevented\n• Average processing time: 2.3 seconds');
+        }
+
+
+
+        function reviewReturn(returnId) {
+            alert(`🔍 Manual Review - ${returnId}\n\nOpening detailed review interface:\n\n• Complete return history\n• Customer communication log\n• AI analysis breakdown\n• Photo evidence review\n• Risk factor analysis\n• Decision documentation\n• Override capabilities`);
+        }
+
+        function processReturn(returnId) {
+            alert(`⚡ Processing Return - ${returnId}\n\nAI-powered processing options:\n\n• Auto-approve low-risk returns\n• Route to appropriate approver\n• Generate return label\n• Schedule pickup/delivery\n• Update inventory status\n• Notify customer\n• Update analytics`);
+        }
+
+        function filterReturns() {
+            const filter = document.getElementById('statusFilter').value.toLowerCase();
+            const searchTerm = document.getElementById('searchReturns').value.toLowerCase();
+            const rows = document.querySelectorAll('#returnsTable tbody tr');
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 6) return; // Make sure row has enough cells
+                
+                const returnId = cells[0].textContent.toLowerCase();
+                const customer = cells[1].textContent.toLowerCase();
+                const item = cells[2].textContent.toLowerCase();
+                const salesperson = cells[3].textContent.toLowerCase();
+                const status = cells[5].textContent.toLowerCase();
+                
+                // Check search term
+                const matchesSearch = !searchTerm || 
+                    returnId.includes(searchTerm) ||
+                    customer.includes(searchTerm) ||
+                    item.includes(searchTerm) ||
+                    salesperson.includes(searchTerm);
+                
+                // Check status filter
+                const matchesFilter = filter === 'all' || 
+                    status.includes(filter.toLowerCase()) ||
+                    (filter === 'pending' && status.includes('pending')) ||
+                    (filter === 'approved' && status.includes('approved')) ||
+                    (filter === 'verified' && status.includes('verified')) ||
+                    (filter === 'completed' && status.includes('completed'));
+                
+                // Show/hide row based on filters
+                if (matchesSearch && matchesFilter) {
+                    row.style.display = '';
+                    row.style.opacity = '1';
+                } else {
+                    row.style.display = 'none';
+                    row.style.opacity = '0.3';
+                }
+            });
+            
+            // Update visible count
+            const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+            console.log(`🔍 Filtered ${visibleRows.length} of ${rows.length} returns`);
+        }
+
+        function searchReturns() {
+            // Call filterReturns to handle both search and filtering
+            filterReturns();
+        }
+
+        function showAllReturns() {
+            showTab('returns');
+        }
+
+        function showSalespersonPerformance() {
+            alert('👤 Salesperson Performance Dashboard\n\nTeam Analytics:\n\n• Individual return rates\n• Customer satisfaction scores\n• Performance trends\n• Coaching recommendations\n• Goal tracking\n• Comparison metrics\n• Training needs analysis');
+        }
+
+        function showVerificationResults() {
+            alert('🔍 Item Verification Results\n\nAI Verification Dashboard:\n\n• 189 items verified today\n• 97.2% accuracy rate\n• 8 discrepancies found\n• Photo quality assessment\n• Match confidence scores\n• Manual review queue\n• Model performance metrics');
+        }
+
+        function showTimelineAnalysis() {
+            alert('⏰ Timeline Analysis Report\n\nTiming Analytics:\n\n• Average sale-to-return: 15.2 days\n• 92% within policy window\n• Peak return periods identified\n• Processing time trends\n• Bottleneck analysis\n• Predictive scheduling\n• Efficiency improvements');
+        }
+
+        // AI Control Functions
+        function showAIModels() {
+            alert('🤖 AI Models Management\n\nConfiguration Interface:\n\n• Risk assessment thresholds (12%, 45%, 87%)\n• Fraud detection sensitivity levels\n• Item verification accuracy tuning\n• Decision confidence levels (85%+ auto)\n• Model retraining schedules\n• Performance monitoring\n• A/B testing capabilities');
+        }
+
+        function configureAI() {
+            alert('⚙️ AI System Configuration\n\nSettings Panel:\n\n• Risk threshold adjustment\n• Automation level controls\n• Model version management\n• Performance monitoring\n• Alert configuration\n• Batch processing settings\n• Integration parameters');
+        }
+
+        function showRiskAssessment() {
+            alert('⚠️ Risk Assessment Dashboard\n\nAI Risk Engine:\n\n• Real-time risk scoring\n• 247 analyses today\n• 12 high-risk cases\n• Pattern recognition alerts\n• Historical risk trends\n• Customer risk profiles\n• Predictive risk modeling');
+        }
+
+        function showFraudDetection() {
+            alert('🛡️ Fraud Detection System\n\nMulti-Layer Protection:\n\n• 94% detection rate\n• $45K annual savings\n• Behavioral pattern analysis\n• Device fingerprinting\n• IP reputation checking\n• ML anomaly detection\n• Real-time blocking');
+        }
+
+        function showPredictiveAnalytics() {
+            alert('🔮 Predictive Analytics\n\nForecasting Engine:\n\n• +23% return volume forecast\n• 87% forecast confidence\n• Seasonal trend analysis\n• Inventory impact prediction\n• Customer retention modeling\n• Resource planning insights\n• Market trend identification');
+        }
+
+        function showSmartAutomation() {
+            alert('⚡ Smart Automation\n\nAutomation Control Center:\n\n• 89% auto-decision rate\n• 73% time savings\n• Smart routing algorithms\n• Communication automation\n• Workflow optimization\n• Performance tracking\n• Continuous learning');
+        }
+
+        function investigatePattern() {
+            alert('🔍 Pattern Investigation\n\nStore #7 Analysis:\n\n• 23% increase in processing errors\n• Identified root causes\n• Staff training needs\n• Process optimization\n• Timeline adjustment\n• Quality improvement plan\n• Monitoring enhancement');
+        }
+
+        // Customer Portal Functions
+        function launchCustomerPortal() {
+            alert('🚀 Launching Customer Portal\n\nPortal Features:\n\n• Self-service return submission\n• Photo upload and verification\n• Real-time status tracking\n• AI-powered assistance\n• Automated communications\n• Mobile-responsive design\n• Multi-language support');
+        }
+
+        function showUsageStats() {
+            alert('📊 Portal Usage Statistics\n\nDaily Metrics:\n\n• 47 active portal users\n• 23 returns submitted\n• 67 photo uploads\n• 68% auto-approval rate\n• 94% satisfaction score\n• <2min average response\n• 89 AI responses, 12 human escalations');
+        }
+
+        function simulateReturnSubmission() {
+            alert('✅ Return Submission Simulated\n\nProcess Flow:\n\n1. Return request received\n2. AI risk assessment initiated\n3. Photo analysis started\n4. Customer verification\n5. Automated decision making\n6. Status update sent\n7. Workflow routing completed\n\nResult: Return RT-2025-006 created successfully');
+        }
+
+        function showSelfServiceInterface() {
+            showTab('customer-portal');
+        }
+
+        function showPhotoUploadSystem() {
+            alert('📸 Photo Upload System\n\nAI Image Processing:\n\n• 189 images processed today\n• 97.2% verification accuracy\n• Automatic item matching\n• Condition assessment\n• Quality scoring\n• Duplicate detection\n• Storage management');
+        }
+
+        function configureNotifications() {
+            alert('🔔 Notification Configuration\n\nCommunication Settings:\n\n• Email notification templates\n• SMS alert preferences\n• In-app notification rules\n• Escalation procedures\n• Personalization options\n• Delivery scheduling\n• Performance tracking');
+        }
+
+        function showSupportDashboard() {
+            alert('💬 Customer Support Dashboard\n\nSupport Analytics:\n\n• 89 AI responses today\n• 12 human escalations\n• 94% customer satisfaction\n• Average response time: <2min\n• Resolution rate: 96%\n• Chat quality scores\n• Agent performance metrics');
+        }
+
+        // Approval Workflow Functions
+        function showApprovalQueue() {
+            alert('📋 Approval Queue Management\n\nQueue Features:\n\n• 12 pending approvals\n• AI-powered prioritization\n• Smart routing to approvers\n• Batch processing options\n• SLA tracking\n• Performance analytics\n• Workflow optimization');
+        }
+
+        function manageApprovers() {
+            alert('👥 Approver Management\n\nTeam Configuration:\n\n• Add/remove approvers\n• Set permission levels\n• Configure escalation rules\n• Workload balancing\n• Performance tracking\n• Training assignments\n• Availability management');
+        }
+
+        function approveReturn(returnId, action) {
+            const actionText = action === 'approve' ? 'approved' : 'declined';
+            alert(`✅ Return ${returnId} ${actionText}\n\nActions Taken:\n\n• Decision recorded\n• Customer notified\n• Inventory updated\n• Analytics updated\n• Follow-up scheduled\n• Documentation completed\n• Workflow advanced`);
+        }
+
+        function showSmartQueue() {
+            showTab('approval-workflow');
+        }
+
+        function showAIRecommendations() {
+            alert('🎯 AI Recommendations\n\nML Decision Support:\n\n• 134 AI decisions made\n• 89.3% confidence average\n• Confidence scoring\n• Reasoning explanations\n• Decision history\n• Accuracy tracking\n• Model performance');
+        }
+
+        function configureWorkflow() {
+            alert('⚙️ Workflow Configuration\n\nProcess Design:\n\n• 3 approval levels\n• 21 active workflows\n• Automatic escalation\n• Conditional routing\n• Parallel processing\n• SLA management\n• Performance optimization');
+        }
+
+        function showApprovalAnalytics() {
+            alert('📈 Approval Analytics\n\nPerformance Metrics:\n\n• 87% approval rate\n• 4.2hr average processing\n• Team performance scores\n• Trend analysis\n• Bottleneck identification\n• Efficiency improvements\n• ROI calculations');
+        }
+
+        // Analytics Functions
+        function generateReport() {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading"></span> Generating...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = '📊 Report Generated';
+                btn.style.background = '#48bb78';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '#667eea';
+                    btn.disabled = false;
+                }, 2000);
+            }, 2500);
+        }
+
+        function scheduleReports() {
+            alert('📅 Report Scheduling\n\nAutomated Reports:\n\n• Daily performance summaries\n• Weekly trend analysis\n• Monthly financial reports\n• Quarterly compliance reports\n• Custom analytics dashboards\n• Real-time KPI monitoring\n• Automated email delivery');
+        }
+
+        function showFinancialReport() {
+            alert('💰 Financial Impact Report\n\nROI Analysis:\n\n• $12,450 daily savings\n• 340% monthly ROI\n• $45K fraud prevention\n• $32.5K process automation\n• $28.2K time savings\n• $15.8K error reduction\n• Payback period: 3.2 months');
+        }
+
+        function showPerformanceDashboard() {
+            alert('📊 Performance Dashboard\n\nSystem Metrics:\n\n• 94.7% AI accuracy rate\n• 2.3s average response time\n• 89% automation rate\n• 99.9% system uptime\n• 96% customer satisfaction\n• 67% reduction in manual work\n• $121.5K monthly savings');
+        }
+
+        function showTrendAnalysis() {
+            alert('🔍 Trend Analysis Report\n\nPattern Recognition:\n\n• 23 new patterns identified\n• 91.8% trend accuracy\n• 15% electronics return increase\n• Seasonal pattern shifts\n• Customer behavior changes\n• Product performance trends\n• Staff efficiency patterns');
+        }
+
+        function showPredictiveModels() {
+            alert('🎯 Predictive Analytics\n\nForecasting Engine:\n\n• +23% volume forecast\n• 87% forecast accuracy\n• Inventory impact prediction\n• Customer retention modeling\n• Resource planning insights\n• Market trend identification\n• Risk probability scoring');
+        }
+
+        // Settings Functions
+        function saveSettings() {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading"></span> Saving...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = '✅ Settings Saved';
+                btn.style.background = '#48bb78';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '#667eea';
+                    btn.disabled = false;
+                }, 2000);
+            }, 1500);
+        }
+
+        // Real-time updates simulation
+        function updateMetrics() {
+            const metrics = document.querySelectorAll('.stat-value');
+            metrics.forEach(metric => {
+                if (Math.random() > 0.9) { // 10% chance to update
+                    const currentValue = metric.textContent;
+                    const numericValue = parseFloat(currentValue.replace(/[^0-9.]/g, ''));
+                    
+                    if (!isNaN(numericValue)) {
+                        const newValue = Math.max(0, numericValue + (Math.random() - 0.5) * 2);
+                        metric.style.color = '#10b981';
+                        setTimeout(() => {
+                            metric.style.color = '#667eea';
+                        }, 1000);
+                    }
+                }
+            });
+        }
+
+        // Update metrics every 8 seconds
+        setInterval(updateMetrics, 8000);
+
+        // Interactive card hover effects
+        document.querySelectorAll('.portal-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.borderLeftColor = '#48bb78';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.borderLeftColor = '#667eea';
+            });
+        });
+
+        // Add click animations to quick actions
+        document.querySelectorAll('.quick-action').forEach(action => {
+            action.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1.05)';
+                }, 100);
+            });
+        });
+
+        // Status indicator updates
+        function updateStatusIndicators() {
+            const indicators = document.querySelectorAll('.status-indicator');
+            indicators.forEach(indicator => {
+                if (Math.random() > 0.95) { // 5% chance to change
+                    const statuses = ['online', 'processing', 'offline'];
+                    const dots = document.querySelectorAll('.status-dot');
+                    
+                    dots.forEach((dot, index) => {
+                        if (Math.random() > 0.8) {
+                            dot.className = `status-dot dot-${statuses[Math.floor(Math.random() * statuses.length)]}`;
+                        }
+                    });
+                }
+            });
+        }
+
+        setInterval(updateStatusIndicators, 10000);
+
+        // Demo data simulation
+        function simulateRealTimeData() {
+            // Simulate new returns
+            const returnCounters = ['activeReturns', 'pendingReturns', 'riskToday', 'verifiedToday', 'decisionsMade'];
+            returnCounters.forEach(counter => {
+                const element = document.getElementById(counter);
+                if (element && Math.random() > 0.95) {
+                    const current = parseInt(element.textContent);
+                    element.textContent = current + 1;
+                }
+            });
+        }
+
+        setInterval(simulateRealTimeData, 12000);
+
+        // Welcome message
+        console.log('🤖 AI Sales Return Portal Loaded Successfully');
+        console.log('📊 Interactive wireframe with full functionality demonstration');
+        console.log('🧠 Features: AI Risk Assessment, Fraud Detection, Predictive Analytics, Customer Portal');
+        console.log('✅ All tabs are now fully interactive with realistic dummy data');
+        console.log('🎮 Click buttons, tables, and cards to explore comprehensive functionality');
+
+        // Add click handler to quick actions for better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            // Make sure Dashboard tab is active by default
+            showTab('dashboard');
+            
+            // Add some sample data to demonstrate live updates
+            setTimeout(() => {
+                const alertContainer = document.querySelector('.alert');
+                if (alertContainer) {
+                    alertContainer.innerHTML = `
+                        <span>🤖</span>
+                        <div>
+                            <strong>AI System Update:</strong> Neural networks have processed 1,247 returns today with 94.7% accuracy. 
+                            <button class="btn btn-secondary" style="margin-left: 1rem; padding: 0.25rem 0.75rem; font-size: 0.8rem;" onclick="showProcessingDetails()">View Details</button>
+                        </div>
+                    `;
+                }
+            }, 1000);
+
+            // Simulate real-time data updates every 15 seconds
+            setInterval(() => {
+                // Update the returns table with new sample data occasionally
+                if (Math.random() > 0.7) {
+                    const sampleReturns = [
+                        {id: 'RT-2025-006', customer: 'Alice Johnson', item: 'Samsung Galaxy S24', sales: 'Tom Anderson', risk: 'Low (18%)', status: 'Pending', action: 'Process'},
+                        {id: 'RT-2025-007', customer: 'Bob Wilson', item: 'Dell XPS 13', sales: 'Lisa Garcia', risk: 'Medium (52%)', status: 'Review Required', action: 'Review'},
+                        {id: 'RT-2025-008', customer: 'Carol Davis', item: 'Sony WH-1000XM5', sales: 'Mike Wilson', risk: 'Low (9%)', status: 'Auto-Approved', action: 'View'}
+                    ];
+                    
+                    // You could add these to the table dynamically
+                    console.log('🆕 New return requests received:', sampleReturns[Math.floor(Math.random() * sampleReturns.length)].id);
+                }
+                
+                // Update AI activity feed occasionally
+                if (Math.random() > 0.6) {
+                    const activities = [
+                        'Risk assessment completed for high-value return',
+                        'Fraud pattern detected and flagged',
+                        'Item verification successful with 99.1% confidence',
+                        'Auto-decision made for low-risk return',
+                        'Predictive model updated with new training data'
+                    ];
+                    console.log('🧠 AI Activity:', activities[Math.floor(Math.random() * activities.length)]);
+                }
+            }, 15000);
+        });
+
+        // Enhanced return details function with more comprehensive data
+        function showReturnDetails(returnId) {
+            const returnDetails = {
+                'RT-2025-001': {
+                    customer: 'John Smith',
+                    email: 'john.smith@email.com',
+                    phone: '+1 (555) 123-4567',
+                    item: 'iPhone 15 Pro (128GB, Space Black)',
+                    price: '$999.00',
+                    salesDate: '2025-10-15',
+                    returnDate: '2025-10-18',
+                    salesperson: 'Sarah Johnson',
+                    aiRisk: '12% (Low)',
+                    riskFactors: 'First-time customer, standard return window, clear documentation',
+                    status: 'Verified',
+                    reason: 'Wrong color received',
+                    photos: '3 photos uploaded - Item condition: Excellent',
+                    verification: '✅ Photos match original sale, serial number verified',
+                    actions: ['Refund processed', 'Inventory updated', 'Customer notified']
+                },
+                'RT-2025-002': {
+                    customer: 'Emily Davis',
+                    email: 'emily.davis@email.com',
+                    phone: '+1 (555) 234-5678',
+                    item: 'MacBook Air M2 (512GB, Silver)',
+                    price: '$1,299.00',
+                    salesDate: '2025-10-10',
+                    returnDate: '2025-10-20',
+                    salesperson: 'Mike Wilson',
+                    aiRisk: '87% (High)',
+                    riskFactors: 'Multiple high-value returns, pattern of quick returns, suspicious timing',
+                    status: 'Review Required',
+                    reason: 'Not working properly',
+                    photos: '2 photos uploaded - Item condition: Good',
+                    verification: '⚠️ Possible tampering detected, further investigation needed',
+                    actions: ['Manual review initiated', 'Customer contact scheduled', 'Forensic analysis pending']
+                },
+                'RT-2025-003': {
+                    customer: 'David Brown',
+                    email: 'david.brown@email.com',
+                    phone: '+1 (555) 345-6789',
+                    item: 'AirPods Pro (2nd Generation)',
+                    price: '$249.00',
+                    salesDate: '2025-10-12',
+                    returnDate: '2025-10-17',
+                    salesperson: 'Lisa Garcia',
+                    aiRisk: '23% (Low)',
+                    riskFactors: 'Loyal customer, reasonable return window, clear reason',
+                    status: 'Auto-Approved',
+                    reason: 'Not the right fit',
+                    photos: '4 photos uploaded - Item condition: Like New',
+                    verification: '✅ Perfect condition, box and accessories included',
+                    actions: ['Auto-refund processed', 'Customer satisfaction confirmed', 'Inventory restocked']
+                },
+                'RT-2025-004': {
+                    customer: 'Maria Rodriguez',
+                    email: 'maria.rodriguez@email.com',
+                    phone: '+1 (555) 456-7890',
+                    item: 'iPad Pro 12.9" (256GB, Space Gray)',
+                    price: '$1,099.00',
+                    salesDate: '2025-10-08',
+                    returnDate: '2025-10-19',
+                    salesperson: 'Tom Anderson',
+                    aiRisk: '45% (Medium)',
+                    riskFactors: 'Medium return value, within policy window, some concerns noted',
+                    status: 'Pending',
+                    reason: 'Changed mind - purchased wrong model',
+                    photos: '1 photo uploaded - Item condition: Good',
+                    verification: '✅ Item verified, minor scratches noted',
+                    actions: ['Pending manager approval', 'Customer communication sent', 'Refund scheduled upon approval']
+                },
+                'RT-2025-005': {
+                    customer: 'Robert Taylor',
+                    email: 'robert.taylor@email.com',
+                    phone: '+1 (555) 567-8901',
+                    item: 'Apple Watch Series 9 (45mm, GPS)',
+                    price: '$429.00',
+                    salesDate: '2025-10-05',
+                    returnDate: '2025-10-16',
+                    salesperson: 'Sarah Johnson',
+                    aiRisk: '8% (Low)',
+                    riskFactors: 'Senior customer, excellent condition, no red flags',
+                    status: 'Completed',
+                    reason: 'Gift recipient already had similar watch',
+                    photos: '5 photos uploaded - Item condition: Excellent',
+                    verification: '✅ All accessories present, pristine condition',
+                    actions: ['Refund completed', 'Gift receipt provided', 'Customer thanked for business']
+                }
+            };
+
+            const detail = returnDetails[returnId];
+            if (!detail) {
+                alert(`❌ Return details not found for ${returnId}\n\nPlease check the return ID and try again.`);
+                return;
+            }
+
+            let message = `📋 RETURN DETAILS - ${returnId}\n\n`;
+            message += `👤 Customer Information:\n`;
+            message += `• Name: ${detail.customer}\n`;
+            message += `• Email: ${detail.email}\n`;
+            message += `• Phone: ${detail.phone}\n\n`;
+            
+            message += `📱 Item Information:\n`;
+            message += `• Product: ${detail.item}\n`;
+            message += `• Price: ${detail.price}\n`;
+            message += `• Sale Date: ${detail.salesDate}\n`;
+            message += `• Return Date: ${detail.returnDate}\n`;
+            message += `• Salesperson: ${detail.salesperson}\n\n`;
+            
+            message += `🤖 AI Analysis:\n`;
+            message += `• Risk Score: ${detail.aiRisk}\n`;
+            message += `• Risk Factors: ${detail.riskFactors}\n\n`;
+            
+            message += `📊 Status & Resolution:\n`;
+            message += `• Current Status: ${detail.status}\n`;
+            message += `• Return Reason: ${detail.reason}\n`;
+            message += `• Photo Evidence: ${detail.photos}\n`;
+            message += `• Verification: ${detail.verification}\n\n`;
+            
+            message += `✅ Actions Taken:\n`;
+            detail.actions.forEach((action, index) => {
+                message += `${index + 1}. ${action}\n`;
+            });
+
+            alert(message);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMTC Sales Return System - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+            }
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header p {
+            font-size: 1.4em;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 0.95;
+            }
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4facfe;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .portal-card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            transition: height 0.3s ease;
+        }
+
+        .portal-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(79, 172, 254, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(79, 172, 254, 0.3);
+            border-color: #4facfe;
+        }
+
+        .portal-card:hover::before {
+            height: 100%;
+            opacity: 0.05;
+        }
+
+        .portal-card:hover::after {
+            left: 100%;
+        }
+
+        .portal-icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: all 0.4s ease;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            position: relative;
+            z-index: 1;
+        }
+
+        .portal-card:hover .portal-icon {
+            transform: scale(1.15) rotate(5deg);
+            filter: drop-shadow(0 8px 16px rgba(79, 172, 254, 0.4));
+        }
+
+        .portal-card h3 {
+            font-size: 1.6em;
+            color: #2d3748;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+            transition: color 0.3s ease;
+        }
+
+        .portal-card:hover h3 {
+            color: #4facfe;
+        }
+
+        .portal-card p {
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            min-height: 60px;
+            position: relative;
+            z-index: 1;
+            transition: color 0.3s ease;
+        }
+
+        .portal-card:hover p {
+            color: #555;
+        }
+
+        .portal-card .features {
+            list-style: none;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .portal-card .features li {
+            padding: 10px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            transform: translateX(0);
+        }
+
+        .portal-card:hover .features li {
+            transform: translateX(5px);
+        }
+
+        .portal-card .features li:before {
+            content: '✓';
+            color: #4facfe;
+            font-weight: bold;
+            font-size: 1.3em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: rgba(79, 172, 254, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .portal-card:hover .features li:before {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            transform: scale(1.1) rotate(360deg);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.05em;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(79, 172, 254, 0.5);
+        }
+
+        .btn:hover::before {
+            left: 0;
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            font-weight: 700;
+            margin-left: 10px;
+            vertical-align: middle;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .badge-ai {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.6);
+            }
+        }
+
+        .badge-new {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .portal-card:hover .badge {
+            transform: translateY(-2px);
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-top: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe, #667eea, #764ba2);
+            background-size: 300% 100%;
+            animation: gradientMove 3s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .info-section h3 {
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 35px;
+            margin-top: 35px;
+        }
+
+        .info-item {
+            text-align: center;
+            padding: 25px;
+            border-radius: 15px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .info-item:hover {
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.05) 0%, rgba(0, 242, 254, 0.05) 100%);
+            transform: translateY(-8px);
+        }
+
+        .info-item-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: all 0.4s ease;
+            filter: grayscale(0.3);
+        }
+
+        .info-item:hover .info-item-icon {
+            transform: scale(1.2) rotateY(180deg);
+            filter: grayscale(0);
+        }
+
+        .info-item h4 {
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+            transition: color 0.3s ease;
+        }
+
+        .info-item:hover h4 {
+            color: #4facfe;
+        }
+
+        .info-item p {
+            color: #666;
+            line-height: 1.6;
+            transition: color 0.3s ease;
+        }
+
+        .info-item:hover p {
+            color: #555;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4facfe, transparent);
+        }
+
+        .footer p {
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer:hover p {
+            opacity: 1;
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe, #667eea);
+            z-index: 9999;
+            transition: width 0.1s ease;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .header p {
+                font-size: 1.1em;
+            }
+
+            .portal-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background particles -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- Scroll progress indicator -->
+    <div class="scroll-indicator" id="scrollIndicator"></div>
+
+    <div class="header">
+        <h1>🔄 UMTC Sales Return System</h1>
+        <p>Comprehensive AI-powered return management platform for sales, customers, and management</p>
+    </div>
+
+    <div class="container">
+        <!-- Management Portals -->
+        <div class="section">
+            <h2 class="section-title">
+                <span>⚙️</span> Management & Staff Portals
+            </h2>
+            <div class="portal-grid">
+                <div class="portal-card">
+                    <div class="portal-icon">🤖</div>
+                    <h3>AI Control Center <span class="badge badge-ai">AI-Powered</span></h3>
+                    <p>Advanced AI-powered oversight and management system with real-time monitoring and intelligent analytics.</p>
+                    <ul class="features">
+                        <li>Real-time AI monitoring</li>
+                        <li>Fraud detection system</li>
+                        <li>Predictive analytics</li>
+                        <li>Smart automation controls</li>
+                    </ul>
+                    <a href="enhanced_ai_dashboard.html" class="btn">Launch AI Dashboard</a>
+                </div>
+
+                <div class="portal-card">
+                    <div class="portal-icon">📊</div>
+                    <h3>Management Portal <span class="badge badge-ai">AI-Enhanced</span></h3>
+                    <p>Complete sales return management portal with comprehensive tracking and analytics capabilities.</p>
+                    <ul class="features">
+                        <li>Full return management</li>
+                        <li>Advanced analytics</li>
+                        <li>Team performance tracking</li>
+                        <li>Inventory integration</li>
+                    </ul>
+                    <a href="sales_return_portal.html" class="btn">Open Management Portal</a>
+                </div>
+
+                <div class="portal-card">
+                    <div class="portal-icon">⚖️</div>
+                    <h3>Approval Workflow</h3>
+                    <p>Dedicated approval workflow dashboard for managers to review and process return requests efficiently.</p>
+                    <ul class="features">
+                        <li>Return queue management</li>
+                        <li>AI-assisted decisions</li>
+                        <li>Bulk approval actions</li>
+                        <li>Escalation controls</li>
+                    </ul>
+                    <a href="approval_workflow.html" class="btn">Open Approval Center</a>
+                </div>
+
+                <div class="portal-card">
+                    <div class="portal-icon">🔍</div>
+                    <h3>Return Tracker</h3>
+                    <p>Interactive tracking system for processing new returns and monitoring return status across all channels.</p>
+                    <ul class="features">
+                        <li>Process new returns</li>
+                        <li>Track return status</li>
+                        <li>AI item verification</li>
+                        <li>Performance analytics</li>
+                    </ul>
+                    <a href="sales_return_tracker.html" class="btn">Open Tracker</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Portal -->
+        <div class="section">
+            <h2 class="section-title">
+                <span>👥</span> Customer Portal
+            </h2>
+            <div class="portal-grid">
+                <div class="portal-card">
+                    <div class="portal-icon">📦</div>
+                    <h3>Customer Return Portal</h3>
+                    <p>Self-service portal for customers to submit return requests, track status, and manage their returns easily.</p>
+                    <ul class="features">
+                        <li>Submit new returns</li>
+                        <li>Track return status</li>
+                        <li>View return history</li>
+                        <li>Upload photos & documents</li>
+                        <li>24/7 help & FAQ</li>
+                    </ul>
+                    <a href="customer_return_portal.html" class="btn">Customer Portal Login</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Information -->
+        <div class="info-section">
+            <h3>🚀 System Features & Benefits</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-item-icon">🤖</div>
+                    <h4>AI-Powered Intelligence</h4>
+                    <p>Advanced machine learning for fraud detection, pattern recognition, and automated decision-making</p>
+                </div>
+                <div class="info-item">
+                    <div class="info-item-icon">⚡</div>
+                    <h4>Real-Time Processing</h4>
+                    <p>Instant return processing with AI verification reducing processing time by 40%</p>
+                </div>
+                <div class="info-item">
+                    <div class="info-item-icon">📊</div>
+                    <h4>Comprehensive Analytics</h4>
+                    <p>Detailed insights on return patterns, salesperson performance, and customer behavior</p>
+                </div>
+                <div class="info-item">
+                    <div class="info-item-icon">🔒</div>
+                    <h4>Secure & Reliable</h4>
+                    <p>Enterprise-grade security with complete audit trails and compliance tracking</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 UMTC Sales Return System. All rights reserved.</p>
+        <p style="margin-top: 10px; font-size: 0.9em;">Powered by AI-enhanced return management technology</p>
+    </div>
+
+    <script>
+        // Create animated particles in background
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random positioning
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                
+                // Random animation delay and duration
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                
+                // Random size
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Scroll progress indicator
+        function updateScrollIndicator() {
+            const scrollIndicator = document.getElementById('scrollIndicator');
+            const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (window.scrollY / windowHeight) * 100;
+            scrollIndicator.style.width = scrolled + '%';
+        }
+
+        // Intersection Observer for scroll animations
+        function setupScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all portal cards
+            document.querySelectorAll('.portal-card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = `all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${index * 0.1}s`;
+                observer.observe(card);
+            });
+
+            // Observe info items
+            document.querySelectorAll('.info-item').forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(30px)';
+                item.style.transition = `all 0.6s ease ${index * 0.15}s`;
+                observer.observe(item);
+            });
+
+            // Observe sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'all 0.8s ease';
+                observer.observe(section);
+            });
+        }
+
+        // Add ripple effect on card click
+        function createRipple(event) {
+            const card = event.currentTarget;
+            const ripple = document.createElement('span');
+            const rect = card.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.style.position = 'absolute';
+            ripple.style.borderRadius = '50%';
+            ripple.style.background = 'rgba(79, 172, 254, 0.3)';
+            ripple.style.transform = 'scale(0)';
+            ripple.style.animation = 'ripple 0.6s ease-out';
+            ripple.style.pointerEvents = 'none';
+
+            card.appendChild(ripple);
+
+            setTimeout(() => ripple.remove(), 600);
+        }
+
+        // Add ripple animation to CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Mouse parallax effect on portal cards
+        function setupParallax() {
+            document.querySelectorAll('.portal-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = (y - centerY) / 20;
+                    const rotateY = (centerX - x) / 20;
+                    
+                    card.style.transform = `translateY(-12px) scale(1.02) perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                });
+            });
+        }
+
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add click ripple effect to cards
+        document.querySelectorAll('.portal-card').forEach(card => {
+            card.addEventListener('click', createRipple);
+        });
+
+        // Track portal access with enhanced animation
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const portalName = this.textContent.trim();
+                console.log(`🚀 Accessing portal: ${portalName}`);
+                
+                // Create success animation
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+            });
+        });
+
+        // Add cursor trail effect (optional, subtle)
+        let cursorTrail = [];
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() > 0.9) { // Only create trail occasionally
+                const trail = document.createElement('div');
+                trail.style.position = 'fixed';
+                trail.style.width = '6px';
+                trail.style.height = '6px';
+                trail.style.borderRadius = '50%';
+                trail.style.background = 'rgba(79, 172, 254, 0.3)';
+                trail.style.left = e.clientX + 'px';
+                trail.style.top = e.clientY + 'px';
+                trail.style.pointerEvents = 'none';
+                trail.style.zIndex = '9998';
+                trail.style.transition = 'all 0.5s ease';
+                
+                document.body.appendChild(trail);
+                
+                setTimeout(() => {
+                    trail.style.opacity = '0';
+                    trail.style.transform = 'scale(2)';
+                }, 50);
+                
+                setTimeout(() => trail.remove(), 600);
+            }
+        });
+
+        // Initialize all features when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            setupScrollAnimations();
+            setupParallax();
+            updateScrollIndicator();
+            
+            console.log('🎨 UMTC Sales Return System - Enhanced UI Loaded');
+            console.log('✨ Animations: Active');
+            console.log('🎯 Interactive Effects: Enabled');
+        });
+
+        // Update scroll indicator on scroll
+        window.addEventListener('scroll', updateScrollIndicator);
+
+        // Add resize handler
+        window.addEventListener('resize', () => {
+            updateScrollIndicator();
+        });
+
+        // Easter egg: Konami code for special effect
+        let konamiCode = [];
+        const konamiPattern = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        
+        document.addEventListener('keydown', (e) => {
+            konamiCode.push(e.key);
+            konamiCode = konamiCode.slice(-10);
+            
+            if (konamiCode.join('') === konamiPattern.join('')) {
+                document.body.style.animation = 'rainbow 2s ease infinite';
+                setTimeout(() => {
+                    document.body.style.animation = '';
+                }, 5000);
+            }
+        });
+
+        const rainbowStyle = document.createElement('style');
+        rainbowStyle.textContent = `
+            @keyframes rainbow {
+                0%, 100% { filter: hue-rotate(0deg); }
+                50% { filter: hue-rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(rainbowStyle);
+    </script>
+</body>
+</html>
+

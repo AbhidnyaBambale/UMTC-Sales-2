@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Approval Workflow - Management Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .approval-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #4facfe;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .urgent {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .workflow-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        .queue-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            height: fit-content;
+        }
+
+        .queue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f1f1;
+        }
+
+        .queue-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .filter-btn.active {
+            background: #4facfe;
+            color: white;
+            border-color: #4facfe;
+        }
+
+        .filter-btn:hover:not(.active) {
+            border-color: #4facfe;
+            color: #4facfe;
+        }
+
+        .return-queue-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .return-queue-item:hover {
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+
+        .return-queue-item.selected {
+            background: white;
+            border-left-color: #4facfe;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .return-queue-item.high-priority {
+            border-left-color: #e53e3e;
+            background: #fef5e7;
+        }
+
+        .return-queue-item.high-priority:hover {
+            background: #fef5e7;
+        }
+
+        .queue-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .return-id {
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .priority-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .priority-high {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .priority-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .priority-low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .queue-item-details {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .ai-score {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .ai-confidence {
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: #e6f3ff;
+            color: #0066cc;
+            font-weight: 500;
+        }
+
+        .review-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f1f1;
+        }
+
+        .review-tabs {
+            display: flex;
+            gap: 5px;
+            background: #f8f9fa;
+            padding: 5px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .review-tab {
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            flex: 1;
+            text-align: center;
+            border: none;
+            background: transparent;
+        }
+
+        .review-tab.active {
+            background: #4facfe;
+            color: white;
+        }
+
+        .review-content {
+            display: none;
+        }
+
+        .review-content.active {
+            display: block;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .info-card h4 {
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        .info-card p {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .ai-analysis {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .ai-analysis h4 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .verification-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .verification-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .verification-score {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .photo-item {
+            background: #f0f0f0;
+            border-radius: 8px;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .photo-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -25px;
+            top: 20px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4facfe;
+        }
+
+        .approval-actions {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 25px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .approval-actions h4 {
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-request-info {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-escalate {
+            background: #6f42c1;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .approval-form {
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .escalation-rules {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .escalation-rules h5 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .escalation-rules ul {
+            color: #856404;
+            margin-left: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .notification-badge {
+            background: #e53e3e;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+
+        .workflow-status {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-reviewing {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .bulk-actions {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .checkbox-all {
+            margin-right: 10px;
+        }
+
+        @media (max-width: 1200px) {
+            .workflow-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .approval-stats {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <h1>⚖️ Return Approval Workflow</h1>
+                <p>Review, approve, and manage return requests with AI assistance</p>
+            </div>
+            <div class="user-info">
+                <div>
+                    <div style="text-align: right;">
+                        <strong>Manager: Alex Rodriguez</strong>
+                        <div style="font-size: 0.9em; opacity: 0.8;">Level 2 Approver</div>
+                    </div>
+                </div>
+                <div class="user-avatar">AR</div>
+            </div>
+        </div>
+
+        <div class="approval-stats">
+            <div class="stat-card">
+                <div class="stat-number">12</div>
+                <div class="stat-label">Pending Approval</div>
+            </div>
+            <div class="stat-card urgent">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Urgent (>24hrs)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">87</div>
+                <div class="stat-label">Approved Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2.1</div>
+                <div class="stat-label">Avg Review Time (hrs)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">94%</div>
+                <div class="stat-label">AI Accuracy Rate</div>
+            </div>
+        </div>
+
+        <div class="bulk-actions">
+            <input type="checkbox" id="selectAll" class="checkbox-all" onchange="toggleSelectAll()">
+            <label for="selectAll">Select All</label>
+            <button class="btn btn-secondary" onclick="bulkApprove()">Bulk Approve</button>
+            <button class="btn btn-secondary" onclick="bulkReject()">Bulk Reject</button>
+            <button class="btn btn-secondary" onclick="bulkAssign()">Bulk Assign</button>
+            <span style="margin-left: auto; font-size: 14px; color: #666;">
+                <span id="selectedCount">0</span> items selected
+            </span>
+        </div>
+
+        <div class="workflow-container">
+            <!-- Left Panel - Return Queue -->
+            <div class="queue-panel">
+                <div class="queue-header">
+                    <h3>📋 Return Queue</h3>
+                    <div style="position: relative;">
+                        🔔
+                        <div class="notification-badge">3</div>
+                    </div>
+                </div>
+
+                <div class="queue-filters">
+                    <button class="filter-btn active" onclick="filterQueue('all')">All (12)</button>
+                    <button class="filter-btn" onclick="filterQueue('urgent')">Urgent (3)</button>
+                    <button class="filter-btn" onclick="filterQueue('high-value')">High Value (5)</button>
+                    <button class="filter-btn" onclick="filterQueue('auto-approve')">Auto-Approve (4)</button>
+                    <button class="filter-btn" onclick="filterQueue('escalated')">Escalated (2)</button>
+                </div>
+
+                <div id="returnQueue">
+                    <div class="return-queue-item high-priority" onclick="selectReturn('RET-2025-0156')">
+                        <div class="queue-item-header">
+                            <div class="return-id">RET-2025-0156</div>
+                            <div class="priority-badge priority-high">HIGH</div>
+                        </div>
+                        <div class="queue-item-details">
+                            <strong>Customer:</strong> Sarah Johnson<br>
+                            <strong>Item:</strong> iPhone 15 Pro ($999)<br>
+                            <strong>Reason:</strong> Defective screen<br>
+                            <strong>Submitted:</strong> 2 days ago
+                        </div>
+                        <div class="ai-score">
+                            🤖 AI Confidence: <span class="ai-confidence">98%</span>
+                        </div>
+                    </div>
+
+                    <div class="return-queue-item" onclick="selectReturn('RET-2025-0157')">
+                        <div class="queue-item-header">
+                            <div class="return-id">RET-2025-0157</div>
+                            <div class="priority-badge priority-medium">MEDIUM</div>
+                        </div>
+                        <div class="queue-item-details">
+                            <strong>Customer:</strong> David Wilson<br>
+                            <strong>Item:</strong> Samsung TV 55" ($1,299)<br>
+                            <strong>Reason:</strong> Wrong size ordered<br>
+                            <strong>Submitted:</strong> 4 hours ago
+                        </div>
+                        <div class="ai-score">
+                            🤖 AI Confidence: <span class="ai-confidence">92%</span>
+                        </div>
+                    </div>
+
+                    <div class="return-queue-item" onclick="selectReturn('RET-2025-0158')">
+                        <div class="queue-item-header">
+                            <div class="return-id">RET-2025-0158</div>
+                            <div class="priority-badge priority-low">LOW</div>
+                        </div>
+                        <div class="queue-item-details">
+                            <strong>Customer:</strong> Emma Brown<br>
+                            <strong>Item:</strong> MacBook Air M3 ($1,199)<br>
+                            <strong>Reason:</strong> Changed mind<br>
+                            <strong>Submitted:</strong> 1 hour ago
+                        </div>
+                        <div class="ai-score">
+                            🤖 AI Confidence: <span class="ai-confidence">74%</span>
+                        </div>
+                    </div>
+
+                    <div class="return-queue-item high-priority" onclick="selectReturn('RET-2025-0159')">
+                        <div class="queue-item-header">
+                            <div class="return-id">RET-2025-0159</div>
+                            <div class="priority-badge priority-high">HIGH</div>
+                        </div>
+                        <div class="queue-item-details">
+                            <strong>Customer:</strong> Michael Chen<br>
+                            <strong>Item:</strong> Gaming Laptop ($2,499)<br>
+                            <strong>Reason:</strong> Not as described<br>
+                            <strong>Submitted:</strong> 3 days ago
+                        </div>
+                        <div class="ai-score">
+                            🤖 AI Confidence: <span class="ai-confidence">67%</span>
+                        </div>
+                    </div>
+
+                    <div class="return-queue-item" onclick="selectReturn('RET-2025-0160')">
+                        <div class="queue-item-header">
+                            <div class="return-id">RET-2025-0160</div>
+                            <div class="priority-badge priority-medium">MEDIUM</div>
+                        </div>
+                        <div class="queue-item-details">
+                            <strong>Customer:</strong> Lisa Park<br>
+                            <strong>Item:</strong> AirPods Pro ($249)<br>
+                            <strong>Reason:</strong> Wrong color<br>
+                            <strong>Submitted:</strong> 6 hours ago
+                        </div>
+                        <div class="ai-score">
+                            🤖 AI Confidence: <span class="ai-confidence">89%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Review Details -->
+            <div class="review-panel">
+                <div class="workflow-status">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>🔍 Return Review: RET-2025-0156</h3>
+                        <div class="status-indicator status-reviewing">
+                            ⏳ Under Review
+                        </div>
+                    </div>
+                    <p style="margin-top: 10px; color: #666;">Assigned to: Alex Rodriguez • SLA: 6 hours remaining</p>
+                </div>
+
+                <div class="review-tabs">
+                    <button class="review-tab active" onclick="switchReviewTab('details')">📋 Details</button>
+                    <button class="review-tab" onclick="switchReviewTab('ai-analysis')">🤖 AI Analysis</button>
+                    <button class="review-tab" onclick="switchReviewTab('photos')">📷 Photos</button>
+                    <button class="review-tab" onclick="switchReviewTab('history')">📜 History</button>
+                </div>
+
+                <!-- Details Tab -->
+                <div id="details" class="review-content active">
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h4>📦 Product Information</h4>
+                            <p><strong>Item:</strong> iPhone 15 Pro 128GB</p>
+                            <p><strong>Color:</strong> Natural Titanium</p>
+                            <p><strong>SKU:</strong> IPH15P-128-NT</p>
+                            <p><strong>Serial:</strong> F2LWD8QFPQ</p>
+                            <p><strong>Purchase Price:</strong> $999.00</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>👤 Customer Information</h4>
+                            <p><strong>Name:</strong> Sarah Johnson</p>
+                            <p><strong>Email:</strong> sarah.j@email.com</p>
+                            <p><strong>Phone:</strong> (555) 123-4567</p>
+                            <p><strong>Member Since:</strong> 2022</p>
+                            <p><strong>Return History:</strong> 2 previous (all approved)</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>💼 Sales Information</h4>
+                            <p><strong>Salesperson:</strong> Mike Chen</p>
+                            <p><strong>Store Location:</strong> Downtown Branch</p>
+                            <p><strong>Sale Date:</strong> September 15, 2025</p>
+                            <p><strong>Payment Method:</strong> Credit Card</p>
+                            <p><strong>Days Since Purchase:</strong> 7 days</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>↩️ Return Information</h4>
+                            <p><strong>Return Date:</strong> September 22, 2025</p>
+                            <p><strong>Reason:</strong> Product defective</p>
+                            <p><strong>Condition:</strong> Poor (screen flickering)</p>
+                            <p><strong>Requested Action:</strong> Full refund</p>
+                            <p><strong>Return Method:</strong> Prepaid label</p>
+                        </div>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                        <h4>📝 Customer Description</h4>
+                        <p style="margin-top: 10px; font-style: italic;">
+                            "The screen started flickering randomly after 5 days of use. It gets worse when the phone heats up. I've tried restarting and updating iOS but the issue persists. The phone is in excellent condition otherwise with all original packaging and accessories."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- AI Analysis Tab -->
+                <div id="ai-analysis" class="review-content">
+                    <div class="ai-analysis">
+                        <h4>🤖 AI Verification Results</h4>
+                        <div class="verification-results">
+                            <div class="verification-item">
+                                <div class="verification-score">98%</div>
+                                <div>Item Match</div>
+                            </div>
+                            <div class="verification-item">
+                                <div class="verification-score">100%</div>
+                                <div>Serial Verified</div>
+                            </div>
+                            <div class="verification-item">
+                                <div class="verification-score">94%</div>
+                                <div>Timeline Valid</div>
+                            </div>
+                            <div class="verification-item">
+                                <div class="verification-score">12%</div>
+                                <div>Fraud Risk</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; border-left: 4px solid #28a745;">
+                        <h4 style="color: #28a745;">✅ AI Recommendation: APPROVE</h4>
+                        <p style="margin-top: 10px;">High confidence return with legitimate defect claim.</p>
+                        
+                        <h5 style="margin-top: 15px; margin-bottom: 10px;">Supporting Evidence:</h5>
+                        <ul style="margin-left: 20px; line-height: 1.6;">
+                            <li>Serial number matches original sale record</li>
+                            <li>Customer has excellent return history</li>
+                            <li>Timeline is reasonable (7 days from purchase)</li>
+                            <li>Screen flickering is a known manufacturing defect for this model</li>
+                            <li>Similar defects reported by 12 other customers this month</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 15px;">
+                        <h5 style="color: #856404;">⚠️ Additional Considerations</h5>
+                        <ul style="margin-top: 10px; margin-left: 20px; color: #856404;">
+                            <li>Consider warranty replacement instead of refund</li>
+                            <li>Flag for quality control review</li>
+                            <li>Customer eligible for expedited processing</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Photos Tab -->
+                <div id="photos" class="review-content">
+                    <h4>📷 Customer Submitted Photos</h4>
+                    <div class="photo-gallery">
+                        <div class="photo-item" onclick="openPhotoModal('photo1')">
+                            📱
+                            <div style="position: absolute; bottom: 5px; font-size: 12px;">Phone Front</div>
+                        </div>
+                        <div class="photo-item" onclick="openPhotoModal('photo2')">
+                            🔍
+                            <div style="position: absolute; bottom: 5px; font-size: 12px;">Screen Issue</div>
+                        </div>
+                        <div class="photo-item" onclick="openPhotoModal('photo3')">
+                            📦
+                            <div style="position: absolute; bottom: 5px; font-size: 12px;">Packaging</div>
+                        </div>
+                        <div class="photo-item" onclick="openPhotoModal('photo4')">
+                            🎫
+                            <div style="position: absolute; bottom: 5px; font-size: 12px;">Receipt</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #e6f3ff; border-left: 4px solid #4facfe; padding: 15px; margin-top: 20px;">
+                        <h5>🤖 AI Photo Analysis</h5>
+                        <p style="margin-top: 10px;">
+                            AI has analyzed the submitted photos and detected clear evidence of screen flickering defect. 
+                            Phone appears to be in excellent physical condition with all original accessories present.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- History Tab -->
+                <div id="history" class="review-content">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <strong>September 22, 2025 - 2:15 PM</strong><br>
+                            Return request submitted by customer
+                        </div>
+                        <div class="timeline-item">
+                            <strong>September 22, 2025 - 2:16 PM</strong><br>
+                            AI pre-screening completed (98% confidence)
+                        </div>
+                        <div class="timeline-item">
+                            <strong>September 22, 2025 - 3:30 PM</strong><br>
+                            Assigned to Level 1 reviewer (John Smith)
+                        </div>
+                        <div class="timeline-item">
+                            <strong>September 23, 2025 - 9:00 AM</strong><br>
+                            Escalated to Level 2 (high value item)
+                        </div>
+                        <div class="timeline-item">
+                            <strong>September 24, 2025 - 10:15 AM</strong><br>
+                            Assigned to Alex Rodriguez (current reviewer)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Approval Actions -->
+                <div class="approval-actions">
+                    <h4>⚖️ Approval Decision</h4>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-approve" onclick="openApprovalModal('approve')">
+                            ✅ Approve Return
+                        </button>
+                        <button class="btn btn-reject" onclick="openApprovalModal('reject')">
+                            ❌ Reject Return
+                        </button>
+                        <button class="btn btn-request-info" onclick="openApprovalModal('request-info')">
+                            ❓ Request More Info
+                        </button>
+                        <button class="btn btn-escalate" onclick="openApprovalModal('escalate')">
+                            ⬆️ Escalate
+                        </button>
+                    </div>
+
+                    <div class="escalation-rules">
+                        <h5>🔄 Auto-Escalation Rules</h5>
+                        <ul>
+                            <li>Items over $1,000 require Level 2 approval</li>
+                            <li>AI confidence below 70% requires manual review</li>
+                            <li>Customer complaints escalate after 24 hours</li>
+                            <li>Repeat returns from same customer need senior review</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approval Decision Modal -->
+    <div id="approvalModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modalContent">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Photo Modal -->
+    <div id="photoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePhotoModal()">&times;</span>
+            <div id="photoModalContent">
+                <!-- Photo content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedReturns = new Set();
+        let currentReturnId = 'RET-2025-0156';
+
+        function selectReturn(returnId) {
+            // Update UI
+            document.querySelectorAll('.return-queue-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.target.closest('.return-queue-item').classList.add('selected');
+            
+            currentReturnId = returnId;
+            
+            // Update review panel header
+            document.querySelector('.workflow-status h3').textContent = `🔍 Return Review: ${returnId}`;
+            
+            console.log(`Selected return: ${returnId}`);
+        }
+
+        function switchReviewTab(tabId) {
+            // Update tab buttons
+            document.querySelectorAll('.review-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.review-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function filterQueue(filter) {
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter logic would go here
+            console.log(`Filtering queue by: ${filter}`);
+        }
+
+        function openApprovalModal(action) {
+            const modal = document.getElementById('approvalModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            let content = '';
+            
+            switch(action) {
+                case 'approve':
+                    content = `
+                        <h3>✅ Approve Return</h3>
+                        <div class="approval-form">
+                            <div class="form-group">
+                                <label>Approval Type:</label>
+                                <select id="approvalType">
+                                    <option value="full-refund">Full Refund ($999.00)</option>
+                                    <option value="exchange">Exchange for Same Item</option>
+                                    <option value="store-credit">Store Credit</option>
+                                    <option value="partial-refund">Partial Refund</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Processing Priority:</label>
+                                <select id="processingPriority">
+                                    <option value="standard">Standard (5-7 days)</option>
+                                    <option value="expedited">Expedited (2-3 days)</option>
+                                    <option value="same-day">Same Day</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Internal Notes:</label>
+                                <textarea id="approvalNotes" rows="3" placeholder="Add any notes for processing team..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Customer Notification:</label>
+                                <select id="customerNotification">
+                                    <option value="auto">Send Automatic Email</option>
+                                    <option value="custom">Send Custom Message</option>
+                                    <option value="none">No Notification</option>
+                                </select>
+                            </div>
+                            <div style="text-align: center; margin-top: 20px;">
+                                <button class="btn btn-approve" onclick="processApproval()">Confirm Approval</button>
+                                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'reject':
+                    content = `
+                        <h3>❌ Reject Return</h3>
+                        <div class="approval-form">
+                            <div class="form-group">
+                                <label>Rejection Reason:</label>
+                                <select id="rejectionReason" required>
+                                    <option value="">Select reason</option>
+                                    <option value="policy-violation">Policy Violation</option>
+                                    <option value="outside-window">Outside Return Window</option>
+                                    <option value="item-damaged">Item Damaged by Customer</option>
+                                    <option value="missing-accessories">Missing Accessories</option>
+                                    <option value="fraud-suspected">Fraud Suspected</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Detailed Explanation:</label>
+                                <textarea id="rejectionExplanation" rows="4" required placeholder="Provide detailed explanation for customer..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Alternative Offer:</label>
+                                <select id="alternativeOffer">
+                                    <option value="none">No Alternative</option>
+                                    <option value="partial-refund">Partial Refund</option>
+                                    <option value="store-credit">Store Credit</option>
+                                    <option value="exchange">Exchange Option</option>
+                                    <option value="repair">Repair Service</option>
+                                </select>
+                            </div>
+                            <div style="text-align: center; margin-top: 20px;">
+                                <button class="btn btn-reject" onclick="processRejection()">Confirm Rejection</button>
+                                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'request-info':
+                    content = `
+                        <h3>❓ Request Additional Information</h3>
+                        <div class="approval-form">
+                            <div class="form-group">
+                                <label>Information Needed:</label>
+                                <div style="margin-top: 10px;">
+                                    <label><input type="checkbox" value="photos"> Additional Photos</label><br>
+                                    <label><input type="checkbox" value="receipt"> Original Receipt</label><br>
+                                    <label><input type="checkbox" value="warranty"> Warranty Information</label><br>
+                                    <label><input type="checkbox" value="accessories"> Accessory List</label><br>
+                                    <label><input type="checkbox" value="condition"> Item Condition Details</label><br>
+                                    <label><input type="checkbox" value="other"> Other (specify below)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Custom Message to Customer:</label>
+                                <textarea id="infoRequest" rows="4" placeholder="Explain what additional information is needed..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Deadline for Response:</label>
+                                <select id="responseDeadline">
+                                    <option value="24h">24 Hours</option>
+                                    <option value="48h">48 Hours</option>
+                                    <option value="7d">7 Days</option>
+                                    <option value="14d">14 Days</option>
+                                </select>
+                            </div>
+                            <div style="text-align: center; margin-top: 20px;">
+                                <button class="btn btn-request-info" onclick="requestInfo()">Send Request</button>
+                                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'escalate':
+                    content = `
+                        <h3>⬆️ Escalate Return</h3>
+                        <div class="approval-form">
+                            <div class="form-group">
+                                <label>Escalate To:</label>
+                                <select id="escalateTo">
+                                    <option value="senior-manager">Senior Manager</option>
+                                    <option value="department-head">Department Head</option>
+                                    <option value="quality-assurance">Quality Assurance</option>
+                                    <option value="legal-team">Legal Team</option>
+                                    <option value="customer-service">Customer Service Manager</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Escalation Reason:</label>
+                                <select id="escalationReason">
+                                    <option value="">Select reason</option>
+                                    <option value="high-value">High Value Item</option>
+                                    <option value="complex-case">Complex Case</option>
+                                    <option value="policy-exception">Policy Exception Needed</option>
+                                    <option value="legal-concern">Legal Concern</option>
+                                    <option value="customer-complaint">Customer Complaint</option>
+                                    <option value="fraud-investigation">Fraud Investigation</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Priority Level:</label>
+                                <select id="escalationPriority">
+                                    <option value="normal">Normal</option>
+                                    <option value="high">High</option>
+                                    <option value="urgent">Urgent</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Escalation Notes:</label>
+                                <textarea id="escalationNotes" rows="4" placeholder="Provide context and reasoning for escalation..."></textarea>
+                            </div>
+                            <div style="text-align: center; margin-top: 20px;">
+                                <button class="btn btn-escalate" onclick="processEscalation()">Escalate Case</button>
+                                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            modalContent.innerHTML = content;
+            modal.classList.add('active');
+        }
+
+        function processApproval() {
+            const approvalType = document.getElementById('approvalType').value;
+            const priority = document.getElementById('processingPriority').value;
+            
+            alert(`✅ Return ${currentReturnId} approved!\n\nType: ${approvalType}\nPriority: ${priority}\n\nCustomer will be notified automatically.`);
+            closeModal();
+            
+            // Remove from queue or update status
+            updateReturnStatus(currentReturnId, 'approved');
+        }
+
+        function processRejection() {
+            const reason = document.getElementById('rejectionReason').value;
+            const explanation = document.getElementById('rejectionExplanation').value;
+            
+            if (!reason || !explanation) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            alert(`❌ Return ${currentReturnId} rejected.\n\nReason: ${reason}\n\nCustomer will be notified with explanation and any alternative offers.`);
+            closeModal();
+            
+            updateReturnStatus(currentReturnId, 'rejected');
+        }
+
+        function requestInfo() {
+            alert(`❓ Information request sent to customer for ${currentReturnId}\n\nCustomer has been notified and case is on hold pending response.`);
+            closeModal();
+            
+            updateReturnStatus(currentReturnId, 'pending-info');
+        }
+
+        function processEscalation() {
+            const escalateTo = document.getElementById('escalateTo').value;
+            const reason = document.getElementById('escalationReason').value;
+            
+            alert(`⬆️ Return ${currentReturnId} escalated to ${escalateTo}\n\nReason: ${reason}\n\nAssignee will be notified automatically.`);
+            closeModal();
+            
+            updateReturnStatus(currentReturnId, 'escalated');
+        }
+
+        function updateReturnStatus(returnId, status) {
+            // Update UI to reflect new status
+            console.log(`Status updated: ${returnId} -> ${status}`);
+            
+            // In a real application, this would update the database
+            // and refresh the queue
+        }
+
+        function openPhotoModal(photoId) {
+            const modal = document.getElementById('photoModal');
+            const modalContent = document.getElementById('photoModalContent');
+            
+            modalContent.innerHTML = `
+                <h3>📷 Photo: ${photoId}</h3>
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="width: 400px; height: 300px; background: #f0f0f0; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 64px;">
+                        📱
+                    </div>
+                    <p style="margin-top: 15px; color: #666;">High resolution photo would be displayed here</p>
+                </div>
+                <div style="background: #e6f3ff; padding: 15px; border-radius: 8px;">
+                    <strong>🤖 AI Analysis:</strong> Clear evidence of screen defect visible. Item appears authentic and matches sale record.
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('approvalModal').classList.remove('active');
+        }
+
+        function closePhotoModal() {
+            document.getElementById('photoModal').classList.remove('active');
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const returnItems = document.querySelectorAll('.return-queue-item');
+            
+            if (selectAll.checked) {
+                returnItems.forEach(item => {
+                    item.style.backgroundColor = '#e6f3ff';
+                    selectedReturns.add(item.onclick.toString().match(/RET-2025-\d+/)[0]);
+                });
+            } else {
+                returnItems.forEach(item => {
+                    item.style.backgroundColor = '';
+                });
+                selectedReturns.clear();
+            }
+            
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            document.getElementById('selectedCount').textContent = selectedReturns.size;
+        }
+
+        function bulkApprove() {
+            if (selectedReturns.size === 0) {
+                alert('Please select at least one return to approve.');
+                return;
+            }
+            
+            if (confirm(`Approve ${selectedReturns.size} selected returns?`)) {
+                alert(`✅ ${selectedReturns.size} returns have been approved and customers notified.`);
+                selectedReturns.clear();
+                updateSelectedCount();
+                document.getElementById('selectAll').checked = false;
+            }
+        }
+
+        function bulkReject() {
+            if (selectedReturns.size === 0) {
+                alert('Please select at least one return to reject.');
+                return;
+            }
+            
+            if (confirm(`Reject ${selectedReturns.size} selected returns?`)) {
+                alert(`❌ ${selectedReturns.size} returns have been rejected. Customers will be notified with reasons.`);
+                selectedReturns.clear();
+                updateSelectedCount();
+                document.getElementById('selectAll').checked = false;
+            }
+        }
+
+        function bulkAssign() {
+            if (selectedReturns.size === 0) {
+                alert('Please select at least one return to assign.');
+                return;
+            }
+            
+            const assignee = prompt('Assign to (enter name):');
+            if (assignee) {
+                alert(`📋 ${selectedReturns.size} returns have been assigned to ${assignee}.`);
+                selectedReturns.clear();
+                updateSelectedCount();
+                document.getElementById('selectAll').checked = false;
+            }
+        }
+
+        // Auto-refresh queue every 30 seconds
+        setInterval(() => {
+            console.log('🔄 Refreshing return queue...');
+            // In a real application, this would fetch new data
+        }, 30000);
+
+        // Notification system
+        function checkForNewReturns() {
+            // Simulate new return notification
+            const notifications = document.querySelector('.notification-badge');
+            // This would check for real notifications in a production system
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Return Approval Workflow initialized');
+            checkForNewReturns();
+        });
+    </script>
+</body>
+</html>
